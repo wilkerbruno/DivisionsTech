@@ -135,7 +135,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const navLinks = document.querySelectorAll('.nav-link, .cta-button');
 
     // Toggle menu
-    mobileMenuToggle.addEventListener('click', function() {
+    mobileMenuToggle.addEventListener('click', function(e) {
+        e.stopPropagation();
         navMenu.classList.toggle('active');
         navOverlay.classList.toggle('active');
         document.body.style.overflow = navMenu.classList.contains('active') ? 'hidden' : '';
@@ -147,6 +148,19 @@ document.addEventListener('DOMContentLoaded', function() {
         navOverlay.classList.remove('active');
         document.body.style.overflow = '';
     });
+
+
+    // Close menu when clicking outside
+    document.addEventListener('click', function(e) {
+        if (navMenu.classList.contains('active') && 
+            !navMenu.contains(e.target) && 
+            !mobileMenuToggle.contains(e.target)) {
+            navMenu.classList.remove('active');
+            navOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+    });
+
 
     // Close menu when clicking nav links
     navLinks.forEach(link => {

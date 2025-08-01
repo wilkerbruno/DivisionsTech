@@ -897,6 +897,15 @@
         display: block;
     }
 
+    .hero {
+        padding-top: 80px; /* Menos padding no mobile */
+        min-height: calc(100vh - 80px);
+    }
+    
+    .hero-container {
+        padding: 1rem;
+    }
+
     .hero-content {
         grid-template-columns: 1fr;
         text-align: center;
@@ -952,6 +961,11 @@
     .nav-menu {
         width: 260px;
         padding: 1.5rem 1rem;
+    }
+
+    .hero {
+        padding-top: 70px;
+        min-height: calc(100vh - 70px);
     }
 
     .hero-text h1 {
