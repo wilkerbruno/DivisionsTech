@@ -1,0 +1,115 @@
+"""
+Divisions Tech — Backend Principal
+FastAPI + MySQL + Mercado Pago + WhatsApp
+Serve o frontend estático automaticamente.
+"""
+
+import pymysql
+pymysql.install_as_MySQLdb()
+
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import RedirectResponse
+from contextlib import asynccontextmanager
+import sys, os, threading, time
+
+# Descobre a raiz do projeto:
+# - Local (dentro de backend/): sobe um nível
+# - Docker (chamado como backend.main:app da raiz /app): usa /app diretamente
+BACKEND_DIR = os.path.dirname(os.path.abspath(__file__))
+ROOT_DIR    = os.path.abspath(os.path.join(BACKEND_DIR, ".."))
+
+# Garante que o backend está no path
+sys.path.insert(0, BACKEND_DIR)
+
+from routers import auth, clients, payments, webhooks, admin
+from database import test_connection
+
+
+def abrir_navegador():
+    """Abre o navegador apenas em ambiente local."""
+    if os.getenv("PRODUCAO") or os.getenv("DOCKER"):
+        return
+    time.sleep(1.5)
+    try:
+        import webbrowser
+        webbrowser.open("http://localhost:8000")
+    except Exception:
+        pass
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    print()
+    print("=" * 45)
+    print("  Divisions Tech API — iniciando...")
+    print("=" * 45)
+
+    ok = test_connection()
+    if not ok:
+        print("⚠️  ATENÇÃO: MySQL indisponível. Verifique config.py / variáveis de ambiente")
+
+    # Abre navegador só localmente
+    threading.Thread(target=abrir_navegador, daemon=True).start()
+
+    print()
+    print(f"  ✅ Servidor rodando!")
+    print(f"  📌 Site:       http://localhost:8000")
+    print(f"  📌 Admin:      http://localhost:8000/admin")
+    print(f"  📌 Hospedagem: http://localhost:8000/pages/hospedagem.html")
+    print(f"  📌 API Docs:   http://localhost:8000/api/docs")
+    print()
+
+    yield
+
+    print("\n  Sistema encerrado.\n")
+
+
+app = FastAPI(
+    title="Divisions Tech API",
+    version="2.0.0",
+    lifespan=lifespan,
+    docs_url="/api/docs",
+    redoc_url="/api/redoc",
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+app.include_router(auth.router,      prefix="/api/auth",     tags=["Auth"])
+app.include_router(clients.router,   prefix="/api/clients",  tags=["Clientes"])
+app.include_router(payments.router,  prefix="/api/payments", tags=["Pagamentos"])
+app.include_router(webhooks.router,  prefix="/api/webhooks", tags=["Webhooks"])
+app.include_router(admin.router,     prefix="/api/admin",    tags=["Admin"])
+
+
+@app.get("/api/health")
+def health():
+    return {"status": "ok", "service": "Divisions Tech API", "version": "2.0.0"}
+
+
+@app.get("/admin")
+def admin_redirect():
+    return RedirectResponse(url="/admin/index.html")
+
+
+# Serve o frontend — DEVE ser o último mount
+app.mount("/", StaticFiles(directory=ROOT_DIR, html=True), name="frontend")
+
+
+# Execução local direta: python main.py (de dentro da pasta backend/)
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(
+        "main:app",
+        host="0.0.0.0",
+        port=8000,
+        reload=False,
+        log_level="warning",
+    )

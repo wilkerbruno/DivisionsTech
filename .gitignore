@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+*.db
+*.zip
+.env
+backend/divisions.db
