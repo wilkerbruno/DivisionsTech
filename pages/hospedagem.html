@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hospedagem de Sites — Divisions Tech</title>
+  <meta name="description" content="Hospedagem rápida, segura e confiável. Planos a partir de R$39,90/mês.">
+  <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <style>
+    /* ── Checkout Modal ──────────────────────────────────────── */
+    .checkout-modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);
+      backdrop-filter:blur(6px);z-index:5000;align-items:center;justify-content:center;padding:1rem;}
+    .checkout-modal-bg.open{display:flex;}
+    .checkout-modal{background:var(--navy-card);border:1px solid var(--navy-border);border-radius:22px;
+      padding:2.5rem 2rem;width:100%;max-width:480px;position:relative;max-height:92vh;overflow-y:auto;}
+    .checkout-modal .close-btn{position:absolute;top:1rem;right:1rem;background:none;border:none;
+      color:var(--gray-400);font-size:1.3rem;cursor:pointer;transition:color .2s;}
+    .checkout-modal .close-btn:hover{color:var(--white);}
+    .checkout-step{display:none;}
+    .checkout-step.active{display:block;}
+    .step-indicator{display:flex;gap:.5rem;margin-bottom:1.75rem;}
+    .step-dot{flex:1;height:4px;border-radius:2px;background:var(--navy-border);transition:background .3s;}
+    .step-dot.done{background:var(--teal);}
+    .checkout-plan-badge{display:inline-flex;align-items:center;gap:.5rem;
+      background:rgba(26,188,179,.1);border:1px solid rgba(26,188,179,.25);
+      color:var(--teal);padding:.4rem 1rem;border-radius:20px;font-size:.85rem;font-weight:700;margin-bottom:1.25rem;}
+    .checkout-modal h3{font-family:'Syne',sans-serif;font-size:1.35rem;margin-bottom:.5rem;}
+    .checkout-modal p.sub{color:var(--gray-400);font-size:.9rem;margin-bottom:1.5rem;line-height:1.6;}
+    .domain-choice{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+    .domain-btn{padding:1.25rem 1rem;border-radius:14px;border:2px solid var(--navy-border);
+      background:var(--grad-dark);cursor:pointer;text-align:center;transition:all .3s;color:var(--white);}
+    .domain-btn:hover{border-color:var(--teal);transform:translateY(-3px);box-shadow:0 10px 24px rgba(26,188,179,.15);}
+    .domain-btn i{display:block;font-size:1.8rem;color:var(--teal);margin-bottom:.75rem;}
+    .domain-btn strong{display:block;font-size:.95rem;margin-bottom:.25rem;}
+    .domain-btn span{font-size:.8rem;color:var(--gray-400);}
+    .checkout-form .form-row{display:grid;grid-template-columns:1fr 1fr;gap:.9rem;}
+    .checkout-form .form-group{margin-bottom:.9rem;}
+    .checkout-form .form-group label{display:block;font-size:.82rem;font-weight:600;
+      color:var(--gray-300);margin-bottom:.35rem;}
+    .checkout-form .form-group input{width:100%;padding:.8rem 1rem;
+      background:var(--navy);border:1px solid var(--navy-border);border-radius:10px;
+      color:var(--white);font-family:inherit;font-size:.9rem;outline:none;transition:border .3s;}
+    .checkout-form .form-group input:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(26,188,179,.1);}
+    .checkout-submit-btn{width:100%;background:var(--grad-teal);color:#fff;padding:1rem;
+      border:none;border-radius:50px;font-family:inherit;font-weight:700;font-size:1rem;
+      cursor:pointer;transition:all .3s;box-shadow:0 8px 24px rgba(26,188,179,.3);margin-top:.5rem;}
+    .checkout-submit-btn:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(26,188,179,.45);}
+    .checkout-submit-btn:disabled{opacity:.6;cursor:not-allowed;transform:none;}
+    .back-btn{background:none;border:none;color:var(--gray-400);cursor:pointer;
+      font-size:.85rem;display:flex;align-items:center;gap:.3rem;margin-bottom:1rem;transition:color .2s;}
+    .back-btn:hover{color:var(--white);}
+    .secure-badge{display:flex;align-items:center;justify-content:center;gap:.5rem;
+      margin-top:1rem;font-size:.78rem;color:var(--gray-400);}
+    .secure-badge i{color:var(--teal);}
+    /* plan cta override para chamar JS */
+    .plan-cta{cursor:pointer;}
+  </style>
+</head>
+<body>
+<div class="loading-overlay" id="loadingOverlay" style="display:none"><div class="loading-spinner"></div></div>
+<header class="header" id="header">
+  <nav class="nav-container">
+    <button class="mobile-menu-toggle" id="mobileMenuToggle"><i class="fas fa-bars"></i></button>
+    <a href="../index.html" class="logo-container">
+      <div class="logo-icon"><img src="../assets/img/divisions.jpeg" alt="Divisions Tech"></div>
+      <span>Divisions Tech</span>
+    </a>
+    <ul class="nav-menu" id="navMenu">
+      <li><a href="../index.html"    class="nav-link">Início</a></li>
+      <li><a href="servicos.html"    class="nav-link">Serviços</a></li>
+      <li><a href="hospedagem.html"  class="nav-link active">Hospedagem</a></li>
+      <li><a href="portfolio.html"   class="nav-link">Portfólio</a></li>
+      <li><a href="sobre.html"       class="nav-link">Sobre</a></li>
+      <li><a href="contato.html"     class="nav-link">Contato</a></li>
+      <li><a href="contato.html"     class="cta-button">Solicitar Orçamento</a></li>
+    </ul>
+    <div class="nav-overlay" id="navOverlay"></div>
+  </nav>
+</header>
+
+<section class="page-hero">
+  <div class="container page-hero-content">
+    <span class="badge">🌐 Sua presença começa aqui</span>
+    <h1>Hospedagem <span>Rápida e Confiável</span></h1>
+    <p>Planos que cabem no seu projeto — servidores estáveis, SSL grátis e suporte de verdade.</p>
+  </div>
+</section>
+
+<section class="hosting-page">
+  <div class="container">
+    <div class="hosting-grid fade-in">
+
+      <!-- STANDARD -->
+      <div class="plan-card">
+        <h2 class="plan-name">Standard</h2>
+        <p class="plan-desc">Ideal para sites pessoais e blogs.</p>
+        <div class="plan-price">
+          <span class="label">Por apenas</span>
+          <div><span style="font-size:1.1rem;color:var(--gray-400)">R$</span><span class="amount">39</span><span class="cents">,90</span><span class="period"> /mês</span></div>
+        </div>
+        <ul class="plan-features">
+          <li><i class="fas fa-hdd"></i> 10 GB de Armazenamento</li>
+          <li><i class="fas fa-tachometer-alt"></i> 30 GB de Tráfego Mensal</li>
+          <li><i class="fas fa-globe"></i> 5 Domínios Hospedados</li>
+          <li><i class="fas fa-lock"></i> SSL Grátis</li>
+          <li><i class="fas fa-history"></i> Backups Automáticos</li>
+          <li><i class="fas fa-headset"></i> Suporte Prioritário (Seg a Sex)</li>
+          <li><i class="fas fa-envelope"></i> 1 Conta de E-mail Profissional</li>
+        </ul>
+        <button onclick="startCheckout('standard')" class="plan-cta outline">Contratar Agora</button>
+      </div>
+
+      <!-- PLUS -->
+      <div class="plan-card featured">
+        <div class="plan-popular-badge">⭐ Mais Popular</div>
+        <h2 class="plan-name">Plus</h2>
+        <p class="plan-desc">Perfeito para sites institucionais.</p>
+        <div class="plan-price">
+          <span class="label">Por apenas</span>
+          <div><span style="font-size:1.1rem;color:var(--gray-400)">R$</span><span class="amount">69</span><span class="cents">,90</span><span class="period"> /mês</span></div>
+        </div>
+        <ul class="plan-features">
+          <li><i class="fas fa-hdd"></i> 20 GB de Armazenamento</li>
+          <li><i class="fas fa-tachometer-alt"></i> 50 GB de Tráfego Mensal</li>
+          <li><i class="fas fa-globe"></i> 10 Domínios Hospedados</li>
+          <li><i class="fas fa-lock"></i> SSL Grátis</li>
+          <li><i class="fas fa-history"></i> Backups Automáticos</li>
+          <li><i class="fas fa-headset"></i> Suporte Prioritário (Seg a Sex)</li>
+          <li><i class="fas fa-envelope"></i> 5 Contas de E-mail Profissional</li>
+        </ul>
+        <button onclick="startCheckout('plus')" class="plan-cta">Contratar Agora</button>
+      </div>
+
+      <!-- PRO -->
+      <div class="plan-card">
+        <h2 class="plan-name">Pro</h2>
+        <p class="plan-desc">Ideal para lojas virtuais e projetos maiores.</p>
+        <div class="plan-price">
+          <span class="label">Por apenas</span>
+          <div><span style="font-size:1.1rem;color:var(--gray-400)">R$</span><span class="amount">89</span><span class="cents">,90</span><span class="period"> /mês</span></div>
+        </div>
+        <ul class="plan-features">
+          <li><i class="fas fa-hdd"></i> 30 GB de Armazenamento</li>
+          <li><i class="fas fa-tachometer-alt"></i> 100 GB de Tráfego Mensal</li>
+          <li><i class="fas fa-globe"></i> 15 Domínios Hospedados</li>
+          <li><i class="fas fa-lock"></i> SSL Grátis</li>
+          <li><i class="fas fa-history"></i> Backups Automáticos</li>
+          <li><i class="fas fa-headset"></i> Suporte Prioritário (Seg a Sex)</li>
+          <li><i class="fas fa-envelope"></i> 10 Contas de E-mail Profissional</li>
+        </ul>
+        <button onclick="startCheckout('pro')" class="plan-cta outline">Contratar Agora</button>
+      </div>
+
+    </div>
+
+    <!-- Perks -->
+    <div class="hosting-perks fade-in">
+      <div class="perk"><div class="perk-icon"><i class="fas fa-bolt"></i></div><h4>Alta Performance</h4><p>Servidores rápidos e estáveis</p></div>
+      <div class="perk"><div class="perk-icon"><i class="fas fa-shield-alt"></i></div><h4>Segurança Real</h4><p>SSL grátis e proteção ativa</p></div>
+      <div class="perk"><div class="perk-icon"><i class="fas fa-history"></i></div><h4>Backups Auto</h4><p>Dados protegidos todo dia</p></div>
+      <div class="perk"><div class="perk-icon"><i class="fas fa-headset"></i></div><h4>Suporte Humano</h4><p>Atendimento real, seg a sex</p></div>
+      <div class="perk"><div class="perk-icon"><i class="fas fa-dollar-sign"></i></div><h4>Custo-Benefício</h4><p>Planos acessíveis com qualidade</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="hosting-faq">
+  <div class="container">
+    <div class="section-header fade-in">
+      <span class="badge">Dúvidas frequentes</span>
+      <h2 class="section-title">Perguntas <span>Frequentes</span></h2>
+    </div>
+    <div class="faq-list fade-in">
+      <div class="faq-item"><div class="faq-question">O SSL é realmente grátis em todos os planos? <i class="fas fa-chevron-down"></i></div>
+        <div class="faq-answer"><p>Sim! Todos os planos incluem SSL Let's Encrypt gratuito configurado automaticamente para todos os domínios.</p></div></div>
+      <div class="faq-item"><div class="faq-question">Como funcionam os backups automáticos? <i class="fas fa-chevron-down"></i></div>
+        <div class="faq-answer"><p>Realizamos backups diários. Em caso de problemas, restauramos em poucas horas mediante solicitação.</p></div></div>
+      <div class="faq-item"><div class="faq-question">Posso migrar meu site de outra hospedagem? <i class="fas fa-chevron-down"></i></div>
+        <div class="faq-answer"><p>Sim! Oferecemos migração gratuita para novos clientes. Nossa equipe cuida de tudo com zero downtime.</p></div></div>
+      <div class="faq-item"><div class="faq-question">Qual é o tempo de ativação do plano? <i class="fas fa-chevron-down"></i></div>
+        <div class="faq-answer"><p>Após confirmação do pagamento, seu plano é ativado em até 2 horas em dias úteis.</p></div></div>
+      <div class="faq-item"><div class="faq-question">Posso fazer upgrade de plano? <i class="fas fa-chevron-down"></i></div>
+        <div class="faq-answer"><p>Claro! Upgrade a qualquer momento sem perder dados. Só entrar em contato com o suporte.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="home-cta">
+  <div class="container"><div class="fade-in">
+    <span class="badge">Comece agora</span>
+    <h2>Seu site merece o <span>melhor lugar na internet</span></h2>
+    <p>Pague com cartão, Pix ou boleto via Mercado Pago. 100% seguro.</p>
+    <button onclick="startCheckout('plus')" class="btn-primary"><i class="fas fa-rocket"></i> Contratar Agora</button>
+  </div></div>
+</section>
+
+<!-- ─── CHECKOUT MODAL ──────────────────────────────────────── -->
+<div id="checkoutModal" class="checkout-modal-bg">
+  <div class="checkout-modal">
+    <button class="close-btn" onclick="closeCheckoutModal()"><i class="fas fa-times"></i></button>
+
+    <!-- PASSO 1 — Domínio -->
+    <div class="checkout-step active" id="step1">
+      <div class="step-indicator">
+        <div class="step-dot done" id="dot1"></div>
+        <div class="step-dot" id="dot2"></div>
+      </div>
+      <div class="checkout-plan-badge">
+        <i class="fas fa-server"></i>
+        Plano <span id="modalPlanName">Plus</span> — <span id="modalPlanPrice">R$ 69,90/mês</span>
+      </div>
+      <h3>Você já tem um domínio?</h3>
+      <p class="sub">Um domínio é o endereço do seu site (ex: <strong style="color:var(--teal)">meusite.com.br</strong>). Se não tiver, sem problema — podemos registrar um para você.</p>
+      <div class="domain-choice">
+        <button class="domain-btn" onclick="chooseDomain(true)">
+          <i class="fas fa-check-circle"></i>
+          <strong>Sim, já tenho</strong>
+          <span>Vou informar meu domínio</span>
+        </button>
+        <button class="domain-btn" onclick="chooseDomain(false)">
+          <i class="fas fa-plus-circle"></i>
+          <strong>Ainda não tenho</strong>
+          <span>Quero registrar um novo</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- PASSO 2 — Dados + Pagamento -->
+    <div class="checkout-step" id="step2">
+      <div class="step-indicator">
+        <div class="step-dot done"></div>
+        <div class="step-dot done"></div>
+      </div>
+      <button class="back-btn" onclick="showStep(1)"><i class="fas fa-arrow-left"></i> Voltar</button>
+      <h3>Seus dados para contratação</h3>
+      <p class="sub">Após preencher, você será redirecionado ao Mercado Pago para pagamento seguro.</p>
+
+      <form id="checkoutForm" class="checkout-form" onsubmit="submitCheckout(event)">
+        <input type="hidden" name="has_domain" id="hasDomain" value="0">
+        <input type="hidden" name="plan" id="checkoutPlan" value="">
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Nome Completo *</label>
+            <input type="text" name="name" placeholder="Seu nome" required>
+          </div>
+          <div class="form-group">
+            <label>CPF</label>
+            <input type="text" name="cpf" placeholder="000.000.000-00" maxlength="14">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>E-mail *</label>
+            <input type="email" name="email" placeholder="seu@email.com" required>
+          </div>
+          <div class="form-group">
+            <label>WhatsApp *</label>
+            <input type="tel" name="phone" placeholder="(00) 9 0000-0000" required>
+          </div>
+        </div>
+
+        <div id="domainRow" style="display:none">
+          <div class="form-group">
+            <label>Seu domínio atual</label>
+            <input type="text" name="domain" placeholder="exemplo: meusite.com.br">
+          </div>
+        </div>
+
+        <button type="submit" class="checkout-submit-btn">
+          <i class="fas fa-lock"></i> Ir para Pagamento Seguro
+        </button>
+        <div class="secure-badge">
+          <i class="fas fa-shield-alt"></i> Pagamento 100% seguro via Mercado Pago
+          &nbsp;·&nbsp; <i class="fas fa-credit-card"></i> Cartão, Pix ou Boleto
+        </div>
+      </form>
+    </div>
+
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-content">
+      <div class="footer-brand"><h3>Divisions Tech</h3><p>Hospedagem rápida, segura e confiável.</p>
+        <div class="social-links">
+          <a href="https://www.instagram.com/divisionstech/" class="social-link" target="_blank"><i class="fab fa-instagram"></i></a>
+          <a href="https://wa.me/5583993654478" class="social-link" target="_blank"><i class="fab fa-whatsapp"></i></a>
+          <a href="mailto:wilker.gandra@divisionstech.com" class="social-link"><i class="fas fa-envelope"></i></a>
+        </div>
+      </div>
+      <div class="footer-section"><h4>Planos</h4><ul>
+        <li><a href="#">Standard — R$39,90/mês</a></li>
+        <li><a href="#">Plus — R$69,90/mês</a></li>
+        <li><a href="#">Pro — R$89,90/mês</a></li>
+      </ul></div>
+      <div class="footer-section"><h4>Empresa</h4><ul>
+        <li><a href="sobre.html">Sobre Nós</a></li>
+        <li><a href="servicos.html">Serviços</a></li>
+        <li><a href="contato.html">Contato</a></li>
+      </ul></div>
+    </div>
+    <div class="footer-bottom"><p>&copy; 2025 Divisions Tech. Todos os direitos reservados.</p></div>
+  </div>
+</footer>
+<div class="floating-contacts">
+  <a href="https://wa.me/5583993654478" class="floating-btn whatsapp" target="_blank"><i class="fab fa-whatsapp"></i></a>
+  <a href="https://www.instagram.com/divisionstech/" class="floating-btn instagram" target="_blank"><i class="fab fa-instagram"></i></a>
+</div>
+<script src="../assets/js/script.js"></script>
+</body></html>

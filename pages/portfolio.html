@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portfólio — Divisions Tech</title>
+  <meta name="description" content="Conheça os projetos desenvolvidos pela Divisions Tech: e-commerces, sistemas, chatbots, automações e muito mais.">
+  <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
+  <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+<div class="loading-overlay" id="loadingOverlay" style="display:none"><div class="loading-spinner"></div></div>
+<header class="header" id="header">
+  <nav class="nav-container">
+    <button class="mobile-menu-toggle" id="mobileMenuToggle"><i class="fas fa-bars"></i></button>
+    <a href="../index.html" class="logo-container">
+      <div class="logo-icon"><img src="../assets/img/divisions.jpeg" alt="Divisions Tech"></div>
+      <span>Divisions Tech</span>
+    </a>
+    <ul class="nav-menu" id="navMenu">
+      <li><a href="../index.html"    class="nav-link">Início</a></li>
+      <li><a href="servicos.html"    class="nav-link">Serviços</a></li>
+      <li><a href="hospedagem.html"  class="nav-link">Hospedagem</a></li>
+      <li><a href="portfolio.html"   class="nav-link active">Portfólio</a></li>
+      <li><a href="sobre.html"       class="nav-link">Sobre</a></li>
+      <li><a href="contato.html"     class="nav-link">Contato</a></li>
+      <li><a href="contato.html"     class="cta-button">Solicitar Orçamento</a></li>
+    </ul>
+    <div class="nav-overlay" id="navOverlay"></div>
+  </nav>
+</header>
+
+<section class="page-hero">
+  <div class="container page-hero-content">
+    <span class="badge">Sistemas prontos</span>
+    <h1>Nosso <span>Portfólio</span></h1>
+    <p>Projetos reais entregues com excelência. Cada solução construída para resolver problemas de negócio concretos.</p>
+  </div>
+</section>
+
+<section class="portfolio-page">
+  <div class="container">
+
+    <div class="portfolio-filters fade-in">
+      <button class="filter-btn active" data-filter="all">Todos</button>
+      <button class="filter-btn" data-filter="web">Sites & Web</button>
+      <button class="filter-btn" data-filter="sistema">Sistemas</button>
+      <button class="filter-btn" data-filter="automacao">Automações</button>
+      <button class="filter-btn" data-filter="mobile">Mobile</button>
+    </div>
+
+    <div class="portfolio-grid">
+
+      <div class="portfolio-item fade-in" data-category="web">
+        <div class="portfolio-preview">
+          <div class="portfolio-preview-glow"></div>
+          <div class="portfolio-preview-icon"><i class="fas fa-shopping-cart"></i></div>
+          <div class="portfolio-tags"><span class="tag">React</span><span class="tag">Node.js</span><span class="tag">Stripe</span></div>
+        </div>
+        <div class="portfolio-content">
+          <h3>E-commerce Multifuncional</h3>
+          <p>Plataforma completa de vendas online com gestão de estoque, pagamentos integrados e dashboard administrativo avançado.</p>
+          <a href="contato.html" class="portfolio-link">Quero algo similar <i class="fas fa-arrow-right"></i></a>
+        </div>
+      </div>
+
+      <div class="portfolio-item fade-in" data-category="sistema">
+        <div class="portfolio-preview">
+          <div class="portfolio-preview-glow"></div>
+          <div class="portfolio-preview-icon"><i class="fas fa-chart-line"></i></div>
+          <div class="portfolio-tags"><span class="tag">Python</span><span class="tag">PostgreSQL</span><span class="tag">Docker</span></div>
+        </div>
+        <div class="portfolio-content">
+          <h3>Sistema de Gestão Empresarial (ERP)</h3>
+          <p>ERP personalizado com módulos financeiro, RH, vendas e relatórios inteligentes para otimizar processos internos.</p>
+          <a href="contato.html" class="portfolio-link">Quero algo similar <i class="fas fa-arrow-right"></i></a>
+        </div>
+      </div>
+
+      <div class="portfolio-item fade-in" data-category="mobile">
+        <div class="portfolio-preview">
+          <div class="portfolio-preview-glow"></div>
+          <div class="portfolio-preview-icon"><i class="fas fa-mobile-alt"></i></div>
+          <div class="portfolio-tags"><span class="tag">React Native</span><span class="tag">Firebase</span></div>
+        </div>
+        <div class="portfolio-content">
+          <h3>Aplicativo Mobile</h3>
+          <p>App nativo para iOS e Android com interface intuitiva, sincronização em tempo real e notificações push.</p>
+          <a href="contato.html" class="portfolio-link">Quero algo similar <i class="fas fa-arrow-right"></i></a>
+        </div>
+      </div>
+
+      <div class="portfolio-item fade-in" data-category="automacao">
+        <div class="portfolio-preview">
+          <div class="portfolio-preview-glow"></div>
+          <div class="portfolio-preview-icon"><i class="fas fa-cogs"></i></div>
+          <div class="portfolio-tags"><span class="tag">Python</span><span class="tag">Selenium</span><span class="tag">n8n</span></div>
+        </div>
+        <div class="portfolio-content">
+          <h3>Automação de Processos</h3>
+          <p>Solução que reduziu 80% do tempo em tarefas repetitivas, aumentando drasticamente a produtividade da equipe.</p>
+          <a href="contato.html" class="portfolio-link">Quero algo similar <i class="fas fa-arrow-right"></i></a>
+        </div>
+      </div>
+
+      <div class="portfolio-item fade-in" data-category="automacao">
+        <div class="portfolio-preview">
+          <div class="portfolio-preview-glow"></div>
+          <div class="portfolio-preview-icon"><i class="fas fa-robot"></i></div>
+          <div class="portfolio-tags"><span class="tag">OpenAI</span><span class="tag">WhatsApp API</span></div>
+        </div>
+        <div class="portfolio-content">
+          <h3>Chatbot Inteligente com IA</h3>
+          <p>Assistente virtual 24/7 integrado a WhatsApp, Instagram e site — atendimento automático sem custo extra de equipe.</p>
+          <a href="contato.html" class="portfolio-link">Quero algo similar <i class="fas fa-arrow-right"></i></a>
+        </div>
+      </div>
+
+      <div class="portfolio-item fade-in" data-category="sistema">
+        <div class="portfolio-preview">
+          <div class="portfolio-preview-glow"></div>
+          <div class="portfolio-preview-icon"><i class="fas fa-database"></i></div>
+          <div class="portfolio-tags"><span class="tag">React</span><span class="tag">Recharts</span><span class="tag">API REST</span></div>
+        </div>
+        <div class="portfolio-content">
+          <h3>Dashboard Analytics</h3>
+          <p>Painel de controle com dados em tempo real, métricas de performance e relatórios personalizados para tomada de decisão.</p>
+          <a href="contato.html" class="portfolio-link">Quero algo similar <i class="fas fa-arrow-right"></i></a>
+        </div>
+      </div>
+
+      <div class="portfolio-item fade-in" data-category="web">
+        <div class="portfolio-preview">
+          <div class="portfolio-preview-glow"></div>
+          <div class="portfolio-preview-icon"><i class="fas fa-paint-brush"></i></div>
+          <div class="portfolio-tags"><span class="tag">HTML/CSS</span><span class="tag">JS</span><span class="tag">SEO</span></div>
+        </div>
+        <div class="portfolio-content">
+          <h3>Landing Pages de Alta Conversão</h3>
+          <p>Páginas otimizadas para converter visitantes em leads e clientes, com foco em velocidade, design e SEO.</p>
+          <a href="contato.html" class="portfolio-link">Quero algo similar <i class="fas fa-arrow-right"></i></a>
+        </div>
+      </div>
+
+      <div class="portfolio-item fade-in" data-category="automacao">
+        <div class="portfolio-preview">
+          <div class="portfolio-preview-glow"></div>
+          <div class="portfolio-preview-icon"><i class="fab fa-whatsapp"></i></div>
+          <div class="portfolio-tags"><span class="tag">Node.js</span><span class="tag">Baileys</span><span class="tag">MongoDB</span></div>
+        </div>
+        <div class="portfolio-content">
+          <h3>Sistema de Disparo WhatsApp</h3>
+          <p>Plataforma de envio em massa com segmentação de listas, agendamento e relatórios de entrega e leitura.</p>
+          <a href="contato.html" class="portfolio-link">Quero algo similar <i class="fas fa-arrow-right"></i></a>
+        </div>
+      </div>
+
+      <div class="portfolio-item fade-in" data-category="web">
+        <div class="portfolio-preview">
+          <div class="portfolio-preview-glow"></div>
+          <div class="portfolio-preview-icon"><i class="fas fa-building"></i></div>
+          <div class="portfolio-tags"><span class="tag">WordPress</span><span class="tag">SEO</span><span class="tag">Performance</span></div>
+        </div>
+        <div class="portfolio-content">
+          <h3>Sites Institucionais</h3>
+          <p>Presença digital profissional para empresas de todos os segmentos, com design exclusivo e otimização técnica.</p>
+          <a href="contato.html" class="portfolio-link">Quero algo similar <i class="fas fa-arrow-right"></i></a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section class="home-cta">
+  <div class="container"><div class="fade-in">
+    <span class="badge">Seu projeto pode ser o próximo</span>
+    <h2>Tem uma ideia? <span>Vamos realizá-la juntos.</span></h2>
+    <p>Entre em contato e receba um orçamento personalizado sem compromisso.</p>
+    <a href="contato.html" class="btn-primary"><i class="fas fa-paper-plane"></i> Solicitar Orçamento</a>
+  </div></div>
+</section>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-content">
+      <div class="footer-brand"><h3>Divisions Tech</h3><p>Desenvolvimento de software, sites, automações e hospedagem de alta performance.</p>
+        <div class="social-links">
+          <a href="https://www.instagram.com/divisionstech/" class="social-link" target="_blank"><i class="fab fa-instagram"></i></a>
+          <a href="https://wa.me/5583993654478" class="social-link" target="_blank"><i class="fab fa-whatsapp"></i></a>
+          <a href="mailto:wilker.gandra@divisionstech.com" class="social-link"><i class="fas fa-envelope"></i></a>
+        </div>
+      </div>
+      <div class="footer-section"><h4>Serviços</h4><ul>
+        <li><a href="servicos.html">Desenvolvimento</a></li><li><a href="servicos.html">Sites</a></li>
+        <li><a href="servicos.html">Automações</a></li><li><a href="hospedagem.html">Hospedagem</a></li>
+      </ul></div>
+      <div class="footer-section"><h4>Empresa</h4><ul>
+        <li><a href="sobre.html">Sobre Nós</a></li><li><a href="portfolio.html">Portfólio</a></li>
+        <li><a href="contato.html">Contato</a></li>
+      </ul></div>
+    </div>
+    <div class="footer-bottom"><p>&copy; 2025 Divisions Tech. Todos os direitos reservados.</p></div>
+  </div>
+</footer>
+<div class="floating-contacts">
+  <a href="https://wa.me/5583993654478" class="floating-btn whatsapp" target="_blank"><i class="fab fa-whatsapp"></i></a>
+  <a href="https://www.instagram.com/divisionstech/" class="floating-btn instagram" target="_blank"><i class="fab fa-instagram"></i></a>
+</div>
+<script src="../assets/js/script.js"></script>
+</body></html>

@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contato — Divisions Tech</title>
+  <meta name="description" content="Entre em contato com a Divisions Tech. Solicite um orçamento, tire dúvidas ou fale sobre seu projeto pelo WhatsApp, e-mail ou formulário.">
+  <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
+  <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+<div class="loading-overlay" id="loadingOverlay" style="display:none"><div class="loading-spinner"></div></div>
+<header class="header" id="header">
+  <nav class="nav-container">
+    <button class="mobile-menu-toggle" id="mobileMenuToggle"><i class="fas fa-bars"></i></button>
+    <a href="../index.html" class="logo-container">
+      <div class="logo-icon"><img src="../assets/img/divisions.jpeg" alt="Divisions Tech"></div>
+      <span>Divisions Tech</span>
+    </a>
+    <ul class="nav-menu" id="navMenu">
+      <li><a href="../index.html"    class="nav-link">Início</a></li>
+      <li><a href="servicos.html"    class="nav-link">Serviços</a></li>
+      <li><a href="hospedagem.html"  class="nav-link">Hospedagem</a></li>
+      <li><a href="portfolio.html"   class="nav-link">Portfólio</a></li>
+      <li><a href="sobre.html"       class="nav-link">Sobre</a></li>
+      <li><a href="contato.html"     class="nav-link active">Contato</a></li>
+      <li><a href="contato.html"     class="cta-button">Solicitar Orçamento</a></li>
+    </ul>
+    <div class="nav-overlay" id="navOverlay"></div>
+  </nav>
+</header>
+
+<section class="page-hero">
+  <div class="container page-hero-content">
+    <span class="badge">Vamos conversar</span>
+    <h1>Fale com a <span>Divisions Tech</span></h1>
+    <p>Estamos prontos para transformar sua ideia em realidade. Escolha o canal que preferir.</p>
+  </div>
+</section>
+
+<section class="contact-page">
+  <div class="container">
+    <div class="contact-layout">
+
+      <div class="contact-info fade-in">
+        <h2>Entre em <span>contato</span></h2>
+        <p>Responderemos em até 2 horas em dias úteis. Para urgências, use o WhatsApp.</p>
+        <div class="contact-methods">
+          <a href="https://wa.me/5583993654478?text=Olá!%20Gostaria%20de%20solicitar%20um%20orçamento." target="_blank" class="contact-method">
+            <div class="contact-icon"><i class="fab fa-whatsapp"></i></div>
+            <div class="contact-method-info"><h3>WhatsApp</h3><p>(83) 9 9365-4478 — Atendimento imediato</p></div>
+          </a>
+          <a href="https://www.instagram.com/divisionstech/" target="_blank" class="contact-method">
+            <div class="contact-icon"><i class="fab fa-instagram"></i></div>
+            <div class="contact-method-info"><h3>Instagram</h3><p>@divisionstech</p></div>
+          </a>
+          <a href="mailto:wilker.gandra@divisionstech.com" class="contact-method">
+            <div class="contact-icon"><i class="fas fa-envelope"></i></div>
+            <div class="contact-method-info"><h3>E-mail</h3><p>wilker.gandra@divisionstech.com</p></div>
+          </a>
+          <a href="https://divisions.tech" target="_blank" class="contact-method">
+            <div class="contact-icon"><i class="fas fa-globe"></i></div>
+            <div class="contact-method-info"><h3>Site</h3><p>www.divisions.tech</p></div>
+          </a>
+        </div>
+        <div class="map-placeholder">
+          <i class="fas fa-map-marker-alt"></i>
+          <p style="font-weight:600;color:var(--white);margin-bottom:.25rem">Atendimento remoto — Todo o Brasil</p>
+          <p>Trabalhamos com clientes em todo o país de forma 100% online e eficiente.</p>
+        </div>
+      </div>
+
+      <div class="contact-form-box fade-in">
+        <h3>Solicite um <span style="color:var(--teal)">Orçamento</span></h3>
+        <form id="contactForm" novalidate>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="name">Nome Completo</label>
+              <input type="text" id="name" name="name" placeholder="Seu nome" required>
+            </div>
+            <div class="form-group">
+              <label for="email">E-mail</label>
+              <input type="email" id="email" name="email" placeholder="seu@email.com" required>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="phone">WhatsApp / Telefone</label>
+              <input type="tel" id="phone" name="phone" placeholder="(00) 9 0000-0000">
+            </div>
+            <div class="form-group">
+              <label for="company">Empresa (opcional)</label>
+              <input type="text" id="company" name="company" placeholder="Nome da empresa">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="service">Serviço de Interesse</label>
+            <select id="service" name="service">
+              <option value="">Selecione um serviço</option>
+              <option value="Hospedagem Standard">🌐 Hospedagem Standard — R$39,90/mês</option>
+              <option value="Hospedagem Plus">🌐 Hospedagem Plus — R$69,90/mês</option>
+              <option value="Hospedagem Pro">🌐 Hospedagem Pro — R$89,90/mês</option>
+              <option value="Desenvolvimento de Software">💻 Desenvolvimento de Software</option>
+              <option value="Criação de Sites">🖥 Criação de Sites / Landing Page</option>
+              <option value="Automações">🤖 Automações Inteligentes</option>
+              <option value="Consultoria Técnica">🔍 Consultoria Técnica</option>
+              <option value="Outro">Outro</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="message">Descreva seu projeto ou dúvida</label>
+            <textarea id="message" name="message" placeholder="Quanto mais detalhes, melhor poderemos te ajudar…" required></textarea>
+          </div>
+          <button type="submit" class="form-submit"><i class="fas fa-paper-plane"></i> Enviar Mensagem</button>
+        </form>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-content">
+      <div class="footer-brand"><h3>Divisions Tech</h3><p>Desenvolvimento de software, sites, automações e hospedagem de alta performance.</p>
+        <div class="social-links">
+          <a href="https://www.instagram.com/divisionstech/" class="social-link" target="_blank"><i class="fab fa-instagram"></i></a>
+          <a href="https://wa.me/5583993654478" class="social-link" target="_blank"><i class="fab fa-whatsapp"></i></a>
+          <a href="mailto:wilker.gandra@divisionstech.com" class="social-link"><i class="fas fa-envelope"></i></a>
+        </div>
+      </div>
+      <div class="footer-section"><h4>Serviços</h4><ul>
+        <li><a href="servicos.html">Desenvolvimento</a></li><li><a href="servicos.html">Sites</a></li>
+        <li><a href="servicos.html">Automações</a></li><li><a href="hospedagem.html">Hospedagem</a></li>
+      </ul></div>
+      <div class="footer-section"><h4>Empresa</h4><ul>
+        <li><a href="sobre.html">Sobre Nós</a></li><li><a href="portfolio.html">Portfólio</a></li>
+        <li><a href="contato.html">Contato</a></li>
+      </ul></div>
+    </div>
+    <div class="footer-bottom"><p>&copy; 2025 Divisions Tech. Todos os direitos reservados.</p></div>
+  </div>
+</footer>
+<div class="floating-contacts">
+  <a href="https://wa.me/5583993654478" class="floating-btn whatsapp" target="_blank"><i class="fab fa-whatsapp"></i></a>
+  <a href="https://www.instagram.com/divisionstech/" class="floating-btn instagram" target="_blank"><i class="fab fa-instagram"></i></a>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script>emailjs.init({ publicKey: 'THXP0Z8EvavUkYr8g' });</script>
+<script src="../assets/js/script.js"></script>
+</body></html>
