@@ -12,5 +12,8 @@ COPY . .
 # Porta
 EXPOSE 8000
 
-# Inicia o backend (que também serve o frontend via StaticFiles)
-CMD ["python", "-m", "uvicorn", "backend.main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "2"]
+# Variável que indica ambiente de produção (não tenta abrir navegador)
+ENV PRODUCAO=true
+
+# Inicia o backend com 1 worker — mais previsível para health checks
+CMD ["python", "-m", "uvicorn", "backend.main:app", "--host", "0.0.0.0", "--port", "8000"]

@@ -1,29 +1,42 @@
 """
-database.py — Conexão MySQL via SQLAlchemy (PyMySQL driver)
+database.py — Conexão MySQL via SQLAlchemy + PyMySQL
 """
 
+import pymysql
+pymysql.install_as_MySQLdb()
+
 from sqlalchemy import create_engine, text
-from sqlalchemy.orm import sessionmaker, Session
+from sqlalchemy.orm import sessionmaker
 from contextlib import contextmanager
 import sys, os
-sys.path.insert(0, os.path.dirname(__file__))
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from config import DB_URL
 
-# ── Engine ───────────────────────────────────────────────────
+# Garante prefixo correto
+_url = DB_URL
+if _url.startswith("mysql://"):
+    _url = _url.replace("mysql://", "mysql+pymysql://", 1)
+
 engine = create_engine(
-    DB_URL,
-    pool_pre_ping=True,       # testa conexão antes de usar
-    pool_recycle=3600,        # recicla conexões a cada 1h
-    pool_size=10,
-    max_overflow=20,
-    echo=False,               # True para debug SQL
+    _url,
+    connect_args={
+        "connect_timeout": 8,
+        "read_timeout":    30,
+        "write_timeout":   30,
+        "charset":         "utf8mb4",
+    },
+    pool_pre_ping=True,
+    pool_recycle=1800,
+    pool_size=5,
+    max_overflow=10,
+    echo=False,
 )
 
 SessionLocal = sessionmaker(bind=engine, autocommit=False, autoflush=False)
 
 
-# ── Dependency (FastAPI) ─────────────────────────────────────
-def get_db() -> Session:
+def get_db():
     db = SessionLocal()
     try:
         yield db
@@ -31,7 +44,6 @@ def get_db() -> Session:
         db.close()
 
 
-# ── Context manager (uso direto) ─────────────────────────────
 @contextmanager
 def get_conn():
     db = SessionLocal()
@@ -45,8 +57,7 @@ def get_conn():
         db.close()
 
 
-def test_connection():
-    """Verifica conectividade com o banco."""
+def test_connection() -> bool:
     try:
         with engine.connect() as conn:
             conn.execute(text("SELECT 1"))
