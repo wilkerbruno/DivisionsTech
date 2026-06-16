@@ -1,25 +1,24 @@
 # Divisions Tech — Dependências do Backend
-# Instale com: pip install -r requirements.txt
+# Versões sem fixação rígida para compatibilidade com Python 3.10 até 3.14+
 
-# Framework web
-fastapi==0.111.0
-uvicorn[standard]==0.30.0
-python-multipart==0.0.9
+fastapi>=0.111.0
+uvicorn[standard]>=0.30.0
+python-multipart>=0.0.9
 
 # MySQL
-sqlalchemy==2.0.30
-pymysql==1.1.1
-cryptography==42.0.8
+sqlalchemy>=2.0.36
+pymysql>=1.1.1
+cryptography>=42.0.8
 
-# Auth — bcrypt direto (sem passlib, compatível com Python 3.14)
-bcrypt==4.0.1
-python-jose[cryptography]==3.3.0
+# Auth
+bcrypt>=4.0.1
+python-jose[cryptography]>=3.3.0
 
 # Mercado Pago
-mercadopago==2.2.2
+mercadopago>=2.2.2
 
 # HTTP client (WhatsApp)
-httpx==0.27.0
+httpx>=0.27.0
 
 # Utilitários
-aiofiles==23.2.1
+aiofiles>=23.2.1

@@ -1,10 +1,9 @@
 """
 Divisions Tech — Backend Principal
-FastAPI + MySQL + Mercado Pago + WhatsApp
-Serve o frontend estático e abre o navegador automaticamente.
+FastAPI + MySQL + Mercado Pago + WhatsApp + Portfólio
+Serve o frontend estático automaticamente.
 """
 
-# IMPORTANTE: registra pymysql ANTES de qualquer import do SQLAlchemy
 import pymysql
 pymysql.install_as_MySQLdb()
 
@@ -13,62 +12,60 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import RedirectResponse
 from contextlib import asynccontextmanager
-import sys, os, webbrowser, threading, time
+import sys, os, threading, time
 
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+BACKEND_DIR = os.path.dirname(os.path.abspath(__file__))
+ROOT_DIR    = os.path.abspath(os.path.join(BACKEND_DIR, ".."))
 
-from routers import auth, clients, payments, webhooks, admin
+sys.path.insert(0, BACKEND_DIR)
+
+from routers import auth, clients, payments, webhooks, admin, portfolio
 from database import test_connection
 
-# Pasta raiz do projeto (um nível acima do backend)
-ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+# Garante que a pasta de uploads existe (importante em deploys novos)
+os.makedirs(os.path.join(BACKEND_DIR, "uploads", "portfolio"), exist_ok=True)
 
 
 def abrir_navegador():
-    """Abre o navegador após 1.5s para o servidor ter tempo de subir."""
+    if os.getenv("PRODUCAO") or os.getenv("DOCKER"):
+        return
     time.sleep(1.5)
-    print()
-    print("  🌐 Abrindo o sistema no navegador...")
-    print("  📌 Se não abrir automaticamente, acesse: http://localhost:8000")
-    print()
-    webbrowser.open("http://localhost:8000")
+    try:
+        import webbrowser
+        webbrowser.open("http://localhost:8000")
+    except Exception:
+        pass
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Startup
     print()
     print("=" * 45)
     print("  Divisions Tech API — iniciando...")
     print("=" * 45)
+
     ok = test_connection()
     if not ok:
-        print("⚠️  ATENÇÃO: MySQL indisponível. Verifique config.py")
+        print("⚠️  ATENÇÃO: MySQL indisponível. Verifique config.py / variáveis de ambiente")
 
-    # Abre navegador em thread separada
-    t = threading.Thread(target=abrir_navegador, daemon=True)
-    t.start()
+    threading.Thread(target=abrir_navegador, daemon=True).start()
 
     print()
-    print("  ✅ Servidor rodando!")
-    print("  📌 Site:          http://localhost:8000")
-    print("  📌 Admin:         http://localhost:8000/admin")
-    print("  📌 Hospedagem:    http://localhost:8000/pages/hospedagem.html")
-    print("  📌 API Docs:      http://localhost:8000/api/docs")
-    print()
-    print("  Pressione CTRL+C para encerrar.")
+    print(f"  ✅ Servidor rodando!")
+    print(f"  📌 Site:       http://localhost:8000")
+    print(f"  📌 Admin:      http://localhost:8000/admin")
+    print(f"  📌 Hospedagem: http://localhost:8000/pages/hospedagem.html")
+    print(f"  📌 API Docs:   http://localhost:8000/api/docs")
     print()
 
     yield
 
-    # Shutdown
-    print()
-    print("  Sistema encerrado.")
+    print("\n  Sistema encerrado.\n")
 
 
 app = FastAPI(
     title="Divisions Tech API",
-    version="2.0.0",
+    version="2.1.0",
     lifespan=lifespan,
     docs_url="/api/docs",
     redoc_url="/api/redoc",
@@ -82,24 +79,25 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Routers da API
-app.include_router(auth.router,      prefix="/api/auth",     tags=["Auth"])
-app.include_router(clients.router,   prefix="/api/clients",  tags=["Clientes"])
-app.include_router(payments.router,  prefix="/api/payments", tags=["Pagamentos"])
-app.include_router(webhooks.router,  prefix="/api/webhooks", tags=["Webhooks"])
-app.include_router(admin.router,     prefix="/api/admin",    tags=["Admin"])
+app.include_router(auth.router,      prefix="/api/auth",      tags=["Auth"])
+app.include_router(clients.router,   prefix="/api/clients",   tags=["Clientes"])
+app.include_router(payments.router,  prefix="/api/payments",  tags=["Pagamentos"])
+app.include_router(webhooks.router,  prefix="/api/webhooks",  tags=["Webhooks"])
+app.include_router(admin.router,     prefix="/api/admin",     tags=["Admin"])
+app.include_router(portfolio.router, prefix="/api/portfolio", tags=["Portfólio"])
 
-# Health check
+
 @app.get("/api/health")
 def health():
-    return {"status": "ok", "service": "Divisions Tech API", "version": "2.0.0"}
+    return {"status": "ok", "service": "Divisions Tech API", "version": "2.1.0"}
 
-# Redireciona /admin para /admin/index.html
+
 @app.get("/admin")
 def admin_redirect():
     return RedirectResponse(url="/admin/index.html")
 
-# Serve os arquivos estáticos do frontend (deve ser o ÚLTIMO)
+
+# Frontend estático — SEMPRE por último
 app.mount("/", StaticFiles(directory=ROOT_DIR, html=True), name="frontend")
 
 
@@ -109,6 +107,6 @@ if __name__ == "__main__":
         "main:app",
         host="0.0.0.0",
         port=8000,
-        reload=False,   # reload=False para funcionar com o mount estático
-        log_level="warning",  # menos verboso no terminal
+        reload=False,
+        log_level="warning",
     )

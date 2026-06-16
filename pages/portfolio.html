@@ -49,125 +49,11 @@
       <button class="filter-btn" data-filter="mobile">Mobile</button>
     </div>
 
-    <div class="portfolio-grid">
-
-      <div class="portfolio-item fade-in" data-category="web">
-        <div class="portfolio-preview">
-          <div class="portfolio-preview-glow"></div>
-          <div class="portfolio-preview-icon"><i class="fas fa-shopping-cart"></i></div>
-          <div class="portfolio-tags"><span class="tag">React</span><span class="tag">Node.js</span><span class="tag">Stripe</span></div>
-        </div>
-        <div class="portfolio-content">
-          <h3>E-commerce Multifuncional</h3>
-          <p>Plataforma completa de vendas online com gestão de estoque, pagamentos integrados e dashboard administrativo avançado.</p>
-          <a href="contato.html" class="portfolio-link">Quero algo similar <i class="fas fa-arrow-right"></i></a>
-        </div>
+    <div class="portfolio-grid" id="portfolioGrid">
+      <div class="portfolio-loading" style="text-align:center;padding:3rem;color:var(--gray-400);grid-column:1/-1">
+        <i class="fas fa-spinner fa-spin" style="font-size:1.5rem;margin-bottom:.75rem;display:block;color:var(--teal)"></i>
+        Carregando projetos...
       </div>
-
-      <div class="portfolio-item fade-in" data-category="sistema">
-        <div class="portfolio-preview">
-          <div class="portfolio-preview-glow"></div>
-          <div class="portfolio-preview-icon"><i class="fas fa-chart-line"></i></div>
-          <div class="portfolio-tags"><span class="tag">Python</span><span class="tag">PostgreSQL</span><span class="tag">Docker</span></div>
-        </div>
-        <div class="portfolio-content">
-          <h3>Sistema de Gestão Empresarial (ERP)</h3>
-          <p>ERP personalizado com módulos financeiro, RH, vendas e relatórios inteligentes para otimizar processos internos.</p>
-          <a href="contato.html" class="portfolio-link">Quero algo similar <i class="fas fa-arrow-right"></i></a>
-        </div>
-      </div>
-
-      <div class="portfolio-item fade-in" data-category="mobile">
-        <div class="portfolio-preview">
-          <div class="portfolio-preview-glow"></div>
-          <div class="portfolio-preview-icon"><i class="fas fa-mobile-alt"></i></div>
-          <div class="portfolio-tags"><span class="tag">React Native</span><span class="tag">Firebase</span></div>
-        </div>
-        <div class="portfolio-content">
-          <h3>Aplicativo Mobile</h3>
-          <p>App nativo para iOS e Android com interface intuitiva, sincronização em tempo real e notificações push.</p>
-          <a href="contato.html" class="portfolio-link">Quero algo similar <i class="fas fa-arrow-right"></i></a>
-        </div>
-      </div>
-
-      <div class="portfolio-item fade-in" data-category="automacao">
-        <div class="portfolio-preview">
-          <div class="portfolio-preview-glow"></div>
-          <div class="portfolio-preview-icon"><i class="fas fa-cogs"></i></div>
-          <div class="portfolio-tags"><span class="tag">Python</span><span class="tag">Selenium</span><span class="tag">n8n</span></div>
-        </div>
-        <div class="portfolio-content">
-          <h3>Automação de Processos</h3>
-          <p>Solução que reduziu 80% do tempo em tarefas repetitivas, aumentando drasticamente a produtividade da equipe.</p>
-          <a href="contato.html" class="portfolio-link">Quero algo similar <i class="fas fa-arrow-right"></i></a>
-        </div>
-      </div>
-
-      <div class="portfolio-item fade-in" data-category="automacao">
-        <div class="portfolio-preview">
-          <div class="portfolio-preview-glow"></div>
-          <div class="portfolio-preview-icon"><i class="fas fa-robot"></i></div>
-          <div class="portfolio-tags"><span class="tag">OpenAI</span><span class="tag">WhatsApp API</span></div>
-        </div>
-        <div class="portfolio-content">
-          <h3>Chatbot Inteligente com IA</h3>
-          <p>Assistente virtual 24/7 integrado a WhatsApp, Instagram e site — atendimento automático sem custo extra de equipe.</p>
-          <a href="contato.html" class="portfolio-link">Quero algo similar <i class="fas fa-arrow-right"></i></a>
-        </div>
-      </div>
-
-      <div class="portfolio-item fade-in" data-category="sistema">
-        <div class="portfolio-preview">
-          <div class="portfolio-preview-glow"></div>
-          <div class="portfolio-preview-icon"><i class="fas fa-database"></i></div>
-          <div class="portfolio-tags"><span class="tag">React</span><span class="tag">Recharts</span><span class="tag">API REST</span></div>
-        </div>
-        <div class="portfolio-content">
-          <h3>Dashboard Analytics</h3>
-          <p>Painel de controle com dados em tempo real, métricas de performance e relatórios personalizados para tomada de decisão.</p>
-          <a href="contato.html" class="portfolio-link">Quero algo similar <i class="fas fa-arrow-right"></i></a>
-        </div>
-      </div>
-
-      <div class="portfolio-item fade-in" data-category="web">
-        <div class="portfolio-preview">
-          <div class="portfolio-preview-glow"></div>
-          <div class="portfolio-preview-icon"><i class="fas fa-paint-brush"></i></div>
-          <div class="portfolio-tags"><span class="tag">HTML/CSS</span><span class="tag">JS</span><span class="tag">SEO</span></div>
-        </div>
-        <div class="portfolio-content">
-          <h3>Landing Pages de Alta Conversão</h3>
-          <p>Páginas otimizadas para converter visitantes em leads e clientes, com foco em velocidade, design e SEO.</p>
-          <a href="contato.html" class="portfolio-link">Quero algo similar <i class="fas fa-arrow-right"></i></a>
-        </div>
-      </div>
-
-      <div class="portfolio-item fade-in" data-category="automacao">
-        <div class="portfolio-preview">
-          <div class="portfolio-preview-glow"></div>
-          <div class="portfolio-preview-icon"><i class="fab fa-whatsapp"></i></div>
-          <div class="portfolio-tags"><span class="tag">Node.js</span><span class="tag">Baileys</span><span class="tag">MongoDB</span></div>
-        </div>
-        <div class="portfolio-content">
-          <h3>Sistema de Disparo WhatsApp</h3>
-          <p>Plataforma de envio em massa com segmentação de listas, agendamento e relatórios de entrega e leitura.</p>
-          <a href="contato.html" class="portfolio-link">Quero algo similar <i class="fas fa-arrow-right"></i></a>
-        </div>
-      </div>
-
-      <div class="portfolio-item fade-in" data-category="web">
-        <div class="portfolio-preview">
-          <div class="portfolio-preview-glow"></div>
-          <div class="portfolio-preview-icon"><i class="fas fa-building"></i></div>
-          <div class="portfolio-tags"><span class="tag">WordPress</span><span class="tag">SEO</span><span class="tag">Performance</span></div>
-        </div>
-        <div class="portfolio-content">
-          <h3>Sites Institucionais</h3>
-          <p>Presença digital profissional para empresas de todos os segmentos, com design exclusivo e otimização técnica.</p>
-          <a href="contato.html" class="portfolio-link">Quero algo similar <i class="fas fa-arrow-right"></i></a>
-        </div>
-      </div>
-
     </div>
   </div>
 </section>
@@ -207,5 +93,80 @@
   <a href="https://wa.me/5583993654478" class="floating-btn whatsapp" target="_blank"><i class="fab fa-whatsapp"></i></a>
   <a href="https://www.instagram.com/divisionstech/" class="floating-btn instagram" target="_blank"><i class="fab fa-instagram"></i></a>
 </div>
+<script>
+const PORTFOLIO_API = 'http://localhost:8000/api/portfolio/public';
+const CATEGORY_ICONS = {
+  web:       'fa-globe',
+  sistema:   'fa-database',
+  automacao: 'fa-robot',
+  mobile:    'fa-mobile-alt',
+};
+
+async function loadDynamicPortfolio() {
+  const grid = document.getElementById('portfolioGrid');
+  try {
+    const res = await fetch(PORTFOLIO_API);
+    if (!res.ok) throw new Error('Falha ao buscar portfólio');
+    const projects = await res.json();
+
+    if (!projects.length) {
+      grid.innerHTML = `
+        <div style="text-align:center;padding:3rem;color:var(--gray-400);grid-column:1/-1">
+          <i class="fas fa-folder-open" style="font-size:1.8rem;margin-bottom:.75rem;display:block;color:var(--teal)"></i>
+          Novos projetos em breve. Volte para conferir!
+        </div>`;
+      return;
+    }
+
+    grid.innerHTML = projects.map(p => {
+      const icon = CATEGORY_ICONS[p.category] || 'fa-folder';
+      const coverImg = p.images && p.images.length
+        ? `<img src="${p.images[0]}" alt="${p.title}" style="width:100%;height:100%;object-fit:cover">`
+        : `<div class="portfolio-preview-icon"><i class="fas ${icon}"></i></div>`;
+      const tags = (p.tags_list || []).map(t => `<span class="tag">${t}</span>`).join('');
+
+      return `
+        <div class="portfolio-item fade-in visible" data-category="${p.category}">
+          <div class="portfolio-preview" style="background:linear-gradient(135deg,#0d2630,#0B1120)">
+            <div class="portfolio-preview-glow"></div>
+            ${coverImg}
+            <div class="portfolio-tags">${tags}</div>
+          </div>
+          <div class="portfolio-content">
+            <h3>${p.title}</h3>
+            <p>${p.description}</p>
+            <a href="contato.html" class="portfolio-link">Quero algo similar <i class="fas fa-arrow-right"></i></a>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    // Reaplica o filtro de categoria já configurado em script.js
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', function () {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        const cat = this.dataset.filter;
+        document.querySelectorAll('.portfolio-item').forEach(item => {
+          const show = cat === 'all' || item.dataset.category === cat;
+          item.style.opacity = show ? '1' : '0.3';
+          item.style.transform = show ? '' : 'scale(0.97)';
+          item.style.pointerEvents = show ? '' : 'none';
+        });
+      });
+    });
+
+  } catch (err) {
+    console.error('Erro ao carregar portfólio:', err);
+    grid.innerHTML = `
+      <div style="text-align:center;padding:3rem;color:var(--gray-400);grid-column:1/-1">
+        <i class="fas fa-exclamation-triangle" style="font-size:1.8rem;margin-bottom:.75rem;display:block;color:var(--teal)"></i>
+        Não foi possível carregar os projetos agora. Tente novamente em breve.
+      </div>`;
+  }
+}
+
+document.addEventListener('DOMContentLoaded', loadDynamicPortfolio);
+</script>
 <script src="../assets/js/script.js"></script>
 </body></html>

@@ -116,6 +116,35 @@
     .page-section{display:none;}
     .page-section.active{display:block;}
 
+    /* Portfolio admin grid */
+    .portfolio-admin-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.25rem;}
+    .portfolio-admin-card{background:var(--grad-dark);border:1px solid var(--navy-border);
+      border-radius:16px;overflow:hidden;transition:border-color .3s;}
+    .portfolio-admin-card:hover{border-color:var(--teal);}
+    .portfolio-admin-cover{height:160px;background:var(--navy);display:flex;align-items:center;
+      justify-content:center;overflow:hidden;position:relative;}
+    .portfolio-admin-cover img{width:100%;height:100%;object-fit:cover;}
+    .portfolio-admin-cover .no-img{color:var(--gray-600);font-size:2rem;}
+    .portfolio-admin-badge{position:absolute;top:8px;right:8px;font-size:.68rem;font-weight:700;
+      padding:.2rem .55rem;border-radius:20px;}
+    .portfolio-admin-badge.published{background:rgba(16,185,129,.85);color:#fff;}
+    .portfolio-admin-badge.draft{background:rgba(148,163,184,.85);color:#fff;}
+    .portfolio-admin-body{padding:1.1rem;}
+    .portfolio-admin-body h4{font-family:'Syne',sans-serif;font-size:1.05rem;margin-bottom:.4rem;}
+    .portfolio-admin-body p{color:var(--gray-400);font-size:.85rem;line-height:1.5;
+      margin-bottom:.75rem;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+    .portfolio-admin-meta{display:flex;justify-content:space-between;align-items:center;
+      margin-bottom:.85rem;font-size:.75rem;color:var(--gray-400);}
+    .portfolio-admin-actions{display:flex;gap:.5rem;}
+    .portfolio-admin-actions .btn{flex:1;justify-content:center;}
+    .existing-image-thumb{position:relative;border-radius:8px;overflow:hidden;aspect-ratio:1;}
+    .existing-image-thumb img{width:100%;height:100%;object-fit:cover;}
+    .existing-image-thumb .del-img-btn{position:absolute;top:3px;right:3px;width:22px;height:22px;
+      border-radius:50%;background:rgba(239,68,68,.9);color:#fff;border:none;cursor:pointer;
+      display:flex;align-items:center;justify-content:center;font-size:.7rem;}
+    .existing-image-thumb .cover-badge{position:absolute;bottom:3px;left:3px;font-size:.6rem;
+      background:rgba(26,188,179,.9);color:#fff;padding:.05rem .4rem;border-radius:10px;}
+
     /* Responsive */
     @media(max-width:768px){
       .admin-layout{grid-template-columns:1fr;}
@@ -159,6 +188,7 @@
     <nav>
       <div class="nav-item active" onclick="showSection('dashboard')"><i class="fas fa-chart-line"></i> Dashboard</div>
       <div class="nav-item" onclick="showSection('clients')"><i class="fas fa-users"></i> Clientes</div>
+      <div class="nav-item" onclick="showSection('portfolio')"><i class="fas fa-images"></i> Portfólio</div>
       <div class="nav-item" onclick="showSection('settings')"><i class="fas fa-cog"></i> Configurações</div>
     </nav>
     <div class="sidebar-bottom">
@@ -236,6 +266,20 @@
       </div>
     </section>
 
+    <!-- PORTFÓLIO -->
+    <section id="section-portfolio" class="page-section">
+      <div class="page-header">
+        <h1>Portfólio <span>de Projetos</span></h1>
+        <button class="btn btn-teal" onclick="openProjectModal()"><i class="fas fa-plus"></i> Novo Projeto</button>
+      </div>
+
+      <div id="portfolioGrid" class="portfolio-admin-grid"></div>
+      <div id="portfolioEmpty" style="text-align:center;padding:3rem;color:var(--gray-400);display:none">
+        <i class="fas fa-images" style="font-size:2rem;margin-bottom:.75rem;display:block;color:var(--teal)"></i>
+        Nenhum projeto cadastrado ainda. Clique em "Novo Projeto" para começar.
+      </div>
+    </section>
+
     <!-- SETTINGS -->
     <section id="section-settings" class="page-section">
       <div class="page-header"><h1>Configurações <span>do Sistema</span></h1></div>
@@ -287,6 +331,67 @@
     <div class="modal-footer">
       <button class="btn btn-outline" onclick="closeModal()">Cancelar</button>
       <button class="btn btn-teal" onclick="saveClient()">Salvar Alterações</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL PROJETO PORTFÓLIO -->
+<div id="projectModal" class="modal-bg">
+  <div class="modal" style="max-width:640px">
+    <h3 id="projectModalTitle">Novo <span>Projeto</span></h3>
+    <input type="hidden" id="projectId">
+
+    <div class="form-group">
+      <label>Título do Projeto</label>
+      <input type="text" id="projectTitle" placeholder="Ex: E-commerce Multifuncional"
+        style="width:100%;padding:.8rem;background:var(--navy);border:1px solid var(--navy-border);border-radius:10px;color:#fff;font-family:inherit;outline:none">
+    </div>
+
+    <div class="form-group" style="margin-top:.9rem">
+      <label>Descrição</label>
+      <textarea id="projectDescription" rows="4" placeholder="Conte sobre o projeto, tecnologias usadas, resultados obtidos..."
+        style="width:100%;padding:.8rem;background:var(--navy);border:1px solid var(--navy-border);border-radius:10px;color:#fff;font-family:inherit;outline:none;resize:vertical"></textarea>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:.9rem;margin-top:.9rem">
+      <div class="form-group">
+        <label>Categoria</label>
+        <select id="projectCategory" style="width:100%;padding:.8rem;background:var(--navy);border:1px solid var(--navy-border);border-radius:10px;color:#fff;font-family:inherit;outline:none">
+          <option value="web">Sites & Web</option>
+          <option value="sistema">Sistemas</option>
+          <option value="automacao">Automações</option>
+          <option value="mobile">Mobile</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Tags (separadas por vírgula)</label>
+        <input type="text" id="projectTags" placeholder="React, Node.js, MySQL"
+          style="width:100%;padding:.8rem;background:var(--navy);border:1px solid var(--navy-border);border-radius:10px;color:#fff;font-family:inherit;outline:none">
+      </div>
+    </div>
+
+    <div class="form-group" style="margin-top:.9rem">
+      <label style="display:flex;align-items:center;gap:.5rem;cursor:pointer">
+        <input type="checkbox" id="projectPublished" checked style="width:auto">
+        Publicar no site imediatamente
+      </label>
+    </div>
+
+    <div class="form-group" style="margin-top:.9rem">
+      <label>Imagens do Projeto</label>
+      <input type="file" id="projectFiles" multiple accept="image/png,image/jpeg,image/webp,image/gif"
+        style="width:100%;padding:.8rem;background:var(--navy);border:1px solid var(--navy-border);border-radius:10px;color:#fff;font-family:inherit;outline:none">
+      <p style="font-size:.78rem;color:var(--gray-400);margin-top:.4rem">Você pode selecionar várias imagens de uma vez. A primeira enviada será a capa.</p>
+    </div>
+
+    <div id="existingImagesBox" style="display:none;margin-top:1rem">
+      <label style="display:block;font-size:.82rem;font-weight:600;color:var(--gray-300);margin-bottom:.5rem">Imagens já cadastradas</label>
+      <div id="existingImagesGrid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:.5rem"></div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeProjectModal()">Cancelar</button>
+      <button class="btn btn-teal" onclick="saveProject()" id="saveProjectBtn">Salvar Projeto</button>
     </div>
   </div>
 </div>
@@ -352,6 +457,7 @@ function showSection(name) {
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   document.getElementById(`section-${name}`).classList.add('active');
   event.currentTarget.classList.add('active');
+  if (name === 'portfolio') loadPortfolio();
 }
 
 // ── Stats ────────────────────────────────────────────────────
@@ -508,6 +614,158 @@ async function authFetch(url, opts={}) {
   } catch(e) {
     console.error('API error:', e);
     return null;
+  }
+}
+// ════════════════════════════════════════════════════════════
+//  PORTFÓLIO
+// ════════════════════════════════════════════════════════════
+let allProjects = [];
+const CATEGORY_LABEL = {web:'Sites & Web', sistema:'Sistemas', automacao:'Automações', mobile:'Mobile'};
+
+async function loadPortfolio() {
+  const r = await authFetch(`${API}/portfolio/`);
+  if (!r) return;
+  allProjects = await r.json();
+  renderPortfolio();
+}
+
+function renderPortfolio() {
+  const grid  = document.getElementById('portfolioGrid');
+  const empty = document.getElementById('portfolioEmpty');
+
+  if (!allProjects.length) {
+    grid.innerHTML = '';
+    empty.style.display = 'block';
+    return;
+  }
+  empty.style.display = 'none';
+
+  grid.innerHTML = allProjects.map(p => {
+    const cover = p.images && p.images.length
+      ? `<img src="${API}/portfolio/image/${(p.images.find(i=>i.is_cover)||p.images[0]).filename}" alt="${p.title}">`
+      : `<i class="fas fa-image no-img"></i>`;
+    return `
+      <div class="portfolio-admin-card">
+        <div class="portfolio-admin-cover">
+          ${cover}
+          <span class="portfolio-admin-badge ${p.is_published ? 'published' : 'draft'}">
+            ${p.is_published ? 'Publicado' : 'Rascunho'}
+          </span>
+        </div>
+        <div class="portfolio-admin-body">
+          <h4>${p.title}</h4>
+          <p>${p.description}</p>
+          <div class="portfolio-admin-meta">
+            <span>${CATEGORY_LABEL[p.category] || p.category}</span>
+            <span>${(p.images||[]).length} foto${(p.images||[]).length!==1?'s':''}</span>
+          </div>
+          <div class="portfolio-admin-actions">
+            <button class="btn btn-outline" onclick="openProjectModal(${p.id})"><i class="fas fa-pen"></i> Editar</button>
+            <button class="btn btn-danger" onclick="deleteProject(${p.id}, '${p.title.replace(/'/g,"\\'")}')"><i class="fas fa-trash"></i></button>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function openProjectModal(id) {
+  document.getElementById('projectId').value = '';
+  document.getElementById('projectTitle').value = '';
+  document.getElementById('projectDescription').value = '';
+  document.getElementById('projectCategory').value = 'web';
+  document.getElementById('projectTags').value = '';
+  document.getElementById('projectPublished').checked = true;
+  document.getElementById('projectFiles').value = '';
+  document.getElementById('existingImagesBox').style.display = 'none';
+  document.getElementById('existingImagesGrid').innerHTML = '';
+  document.getElementById('projectModalTitle').innerHTML = 'Novo <span>Projeto</span>';
+
+  if (id) {
+    const p = allProjects.find(x => x.id === id);
+    if (p) {
+      document.getElementById('projectId').value = p.id;
+      document.getElementById('projectTitle').value = p.title;
+      document.getElementById('projectDescription').value = p.description;
+      document.getElementById('projectCategory').value = p.category;
+      document.getElementById('projectTags').value = p.tags || '';
+      document.getElementById('projectPublished').checked = !!p.is_published;
+      document.getElementById('projectModalTitle').innerHTML = 'Editar <span>Projeto</span>';
+
+      if (p.images && p.images.length) {
+        document.getElementById('existingImagesBox').style.display = 'block';
+        document.getElementById('existingImagesGrid').innerHTML = p.images.map(img => `
+          <div class="existing-image-thumb">
+            <img src="${API}/portfolio/image/${img.filename}">
+            ${img.is_cover ? '<span class="cover-badge">Capa</span>' : ''}
+            <button class="del-img-btn" onclick="deleteProjectImage(${p.id}, ${img.id})"><i class="fas fa-times"></i></button>
+          </div>
+        `).join('');
+      }
+    }
+  }
+
+  document.getElementById('projectModal').classList.add('open');
+}
+
+function closeProjectModal() {
+  document.getElementById('projectModal').classList.remove('open');
+}
+
+async function saveProject() {
+  const id = document.getElementById('projectId').value;
+  const title = document.getElementById('projectTitle').value.trim();
+  const description = document.getElementById('projectDescription').value.trim();
+
+  if (!title || !description) {
+    alert('Preencha título e descrição do projeto.');
+    return;
+  }
+
+  const fd = new FormData();
+  fd.append('title', title);
+  fd.append('description', description);
+  fd.append('category', document.getElementById('projectCategory').value);
+  fd.append('tags', document.getElementById('projectTags').value.trim());
+  fd.append('is_published', document.getElementById('projectPublished').checked);
+
+  const files = document.getElementById('projectFiles').files;
+  for (let i = 0; i < files.length; i++) {
+    fd.append('files', files[i]);
+  }
+
+  const btn = document.getElementById('saveProjectBtn');
+  btn.disabled = true;
+  btn.textContent = 'Salvando...';
+
+  const url = id ? `${API}/portfolio/${id}` : `${API}/portfolio/`;
+  const method = id ? 'PUT' : 'POST';
+
+  const r = await authFetch(url, { method, body: fd });
+
+  btn.disabled = false;
+  btn.textContent = 'Salvar Projeto';
+
+  if (r && r.ok) {
+    closeProjectModal();
+    loadPortfolio();
+  } else {
+    alert('Erro ao salvar o projeto. Verifique os dados e tente novamente.');
+  }
+}
+
+async function deleteProject(id, title) {
+  if (!confirm(`Excluir o projeto "${title}"? Todas as imagens serão apagadas. Esta ação não pode ser desfeita.`)) return;
+  const r = await authFetch(`${API}/portfolio/${id}`, { method: 'DELETE' });
+  if (r && r.ok) loadPortfolio();
+}
+
+async function deleteProjectImage(projectId, imageId) {
+  if (!confirm('Remover esta imagem do projeto?')) return;
+  const r = await authFetch(`${API}/portfolio/${projectId}/image/${imageId}`, { method: 'DELETE' });
+  if (r && r.ok) {
+    await loadPortfolio();
+    openProjectModal(projectId);
   }
 }
 </script>
