@@ -8,7 +8,7 @@ import os
 # ── MySQL (PyMySQL como driver — compatível com Windows/Linux/Mac) ────
 DB_URL = os.getenv(
     "DATABASE_URL",
-    "mysql+pymysql://mysql:0h5j6srwidut7rpv3uwz@easypanel.pontocomdesconto.com.br:3020/divisionstech"
+    "mysql://mysql:dg9kpr99fl4jra84qz0m@easypanel.pontocomdesconto.com.br:3021/divisionstech"
 )
 
 # ── Mercado Pago ──────────────────────────────────────────────
