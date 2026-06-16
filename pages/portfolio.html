@@ -94,7 +94,13 @@
   <a href="https://www.instagram.com/divisionstech/" class="floating-btn instagram" target="_blank"><i class="fab fa-instagram"></i></a>
 </div>
 <script>
-const PORTFOLIO_API = 'http://localhost:8000/api/portfolio/public';
+const PORTFOLIO_API = (() => {
+  const { hostname, protocol } = window.location;
+  if (hostname === 'localhost' || hostname === '127.0.0.1') {
+    return 'http://localhost:8000/api/portfolio/public';
+  }
+  return `${protocol}//${window.location.host}/api/portfolio/public`;
+})();
 const CATEGORY_ICONS = {
   web:       'fa-globe',
   sistema:   'fa-database',

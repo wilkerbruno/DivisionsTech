@@ -397,7 +397,16 @@
 </div>
 
 <script>
-const API = 'http://localhost:8000/api';
+// Detecta automaticamente a URL da API com base em onde o site está hospedado.
+// Em localhost mantém a porta 8000 explícita; em produção usa o mesmo domínio (sem porta),
+// já que o backend serve o frontend e a API a partir da mesma origem.
+const API = (() => {
+  const { hostname, protocol } = window.location;
+  if (hostname === 'localhost' || hostname === '127.0.0.1') {
+    return 'http://localhost:8000/api';
+  }
+  return `${protocol}//${window.location.host}/api`;
+})();
 let TOKEN = localStorage.getItem('dt_token') || '';
 let allClients = [];
 

@@ -170,7 +170,14 @@ document.addEventListener('DOMContentLoaded', () => {
 /* ============================================================
    CHECKOUT — Fluxo de contratação de hospedagem
    ============================================================ */
-const API_BASE = 'http://localhost:8000/api';  // ← mude para sua URL de produção
+// Detecta automaticamente a URL da API com base em onde o site está hospedado.
+const API_BASE = (() => {
+  const { hostname, protocol } = window.location;
+  if (hostname === 'localhost' || hostname === '127.0.0.1') {
+    return 'http://localhost:8000/api';
+  }
+  return `${protocol}//${window.location.host}/api`;
+})();
 
 const PLAN_INFO = {
   standard: { name: 'Standard', price: 'R$ 39,90/mês' },
