@@ -8,7 +8,7 @@ import os
 # Driver pymysql explícito — não depende do MySQLdb/mysqlclient
 DB_URL = os.getenv(
     "DATABASE_URL",
-    "mysql+pymysql://mysql:dg9kpr99fl4jra84qz0m@easypanel.pontocomdesconto.com.br:3021/divisionstech"
+    "mysql+pymysql://mysql:dg9kpr99fl4jra84qz0m@divisions_divisionstech_bd:3306/divisionstech"
 )
 
 # ── Mercado Pago ──────────────────────────────────────────────
