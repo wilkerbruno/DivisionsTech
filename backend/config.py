@@ -1,21 +1,21 @@
 """
 config.py — Configurações centralizadas Divisions Tech
-Edite as variáveis abaixo antes de iniciar o servidor.
 """
 
 import os
 
-# ── MySQL (PyMySQL como driver — compatível com Windows/Linux/Mac) ────
+# ── MySQL ─────────────────────────────────────────────────────
+# Driver pymysql explícito — não depende do MySQLdb/mysqlclient
 DB_URL = os.getenv(
     "DATABASE_URL",
-    "mysql://mysql:dg9kpr99fl4jra84qz0m@easypanel.pontocomdesconto.com.br:3021/divisionstech"
+    "mysql+pymysql://mysql:dg9kpr99fl4jra84qz0m@easypanel.pontocomdesconto.com.br:3021/divisionstech"
 )
 
 # ── Mercado Pago ──────────────────────────────────────────────
 MP_ACCESS_TOKEN = os.getenv("MP_ACCESS_TOKEN", "SEU_ACCESS_TOKEN_AQUI")
 MP_PUBLIC_KEY   = os.getenv("MP_PUBLIC_KEY",   "SEU_PUBLIC_KEY_AQUI")
 
-# URL base do seu servidor (sem barra final)
+# URL base do servidor (sem barra final)
 BASE_URL = os.getenv("BASE_URL", "http://localhost:8000")
 
 # ── WhatsApp ──────────────────────────────────────────────────
@@ -33,7 +33,7 @@ JWT_SECRET       = os.getenv("JWT_SECRET", "TROQUE_POR_UMA_CHAVE_ALEATORIA_LONGA
 JWT_ALGO         = "HS256"
 JWT_EXPIRE_HOURS = 12
 
-# ── Planos de Hospedagem ──────────────────────────────────────
+# ── Planos ────────────────────────────────────────────────────
 PLANS = {
     "standard": {"name": "Standard", "price": 39.90, "label": "R$ 39,90/mês"},
     "plus":     {"name": "Plus",     "price": 69.90, "label": "R$ 69,90/mês"},
