@@ -166,7 +166,6 @@ async function loadDynamicPortfolio() {
       } else {
         visual = `<div class="portfolio-logo"><img src="../assets/img/projects/${slugify(p.title)}.png" alt="Logo ${esc(p.title)}" data-icon="${icon}" onerror="logoNotFound(this)"></div>`;
       }
-      const tags = (p.tags_list || []).map(t => `<span class="tag">${esc(t)}</span>`).join('');
       const visit = p.project_url
         ? `<a href="${esc(p.project_url)}" class="portfolio-btn portfolio-btn-primary" target="_blank" rel="noopener noreferrer">Ver projeto <i class="fas fa-arrow-up-right-from-square"></i></a>`
         : '';
@@ -176,7 +175,6 @@ async function loadDynamicPortfolio() {
           <div class="portfolio-preview" style="background:linear-gradient(135deg,#0d2630,#0B1120)">
             <div class="portfolio-preview-glow"></div>
             ${visual}
-            <div class="portfolio-tags">${tags}</div>
           </div>
           <div class="portfolio-content">
             <h3>${esc(p.title)}</h3>
