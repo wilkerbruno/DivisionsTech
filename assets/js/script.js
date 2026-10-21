@@ -85,20 +85,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const sg = $('.stats-grid');
   if (sg) statsObs.observe(sg);
 
-  // ── Portfolio filter ──────────────────────────────────────
-  $$('.filter-btn').forEach(btn => {
-    btn.addEventListener('click', function () {
-      $$('.filter-btn').forEach(b => b.classList.remove('active'));
-      this.classList.add('active');
-      const cat = this.dataset.filter;
-      $$('.portfolio-item').forEach(item => {
-        const show = cat === 'all' || item.dataset.category === cat;
-        item.style.opacity = show ? '1' : '0.3';
-        item.style.transform = show ? '' : 'scale(0.97)';
-        item.style.pointerEvents = show ? '' : 'none';
-      });
-    });
-  });
+  // ── Portfolio filter: tratado em pages/portfolio.html (cards são carregados via API)
 
   // ── Plan card hover dim ───────────────────────────────────
   $$('.plan-card').forEach(card => {

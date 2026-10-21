@@ -210,8 +210,20 @@ a{text-decoration:none;color:inherit;}
 .portfolio-content p{color:var(--gray-400);font-size:.9rem;line-height:1.6;margin-bottom:1rem;}
 .portfolio-link{display:inline-flex;align-items:center;gap:.4rem;color:var(--teal);font-size:.85rem;font-weight:600;transition:gap .2s;}
 .portfolio-link:hover{gap:.7rem;}
-.portfolio-actions{display:flex;flex-wrap:wrap;gap:.6rem 1.25rem;align-items:center;}
-.portfolio-link-primary{background:var(--grad-teal);color:#fff;padding:.5rem 1rem;border-radius:999px;}
+.portfolio-item{display:flex;flex-direction:column;}
+.portfolio-item[hidden]{display:none;}
+.portfolio-preview{height:210px;padding-bottom:58px;box-sizing:border-box;}
+.portfolio-logo{position:relative;width:96px;height:96px;border-radius:22px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;padding:12px;box-shadow:0 10px 30px rgba(0,0,0,.35);transition:transform .35s;}
+.portfolio-logo img{width:100%;height:100%;object-fit:contain;border-radius:12px;}
+.portfolio-item:hover .portfolio-logo{transform:scale(1.06);}
+.portfolio-content{display:flex;flex-direction:column;flex:1;}
+.portfolio-actions{display:flex;flex-wrap:wrap;gap:.75rem;margin-top:auto;padding-top:1.25rem;}
+.portfolio-btn{flex:1 1 140px;display:inline-flex;align-items:center;justify-content:center;gap:.5rem;padding:.75rem 1.1rem;border-radius:12px;border:1px solid transparent;font-size:.88rem;font-weight:600;white-space:nowrap;text-align:center;transition:all .25s;cursor:pointer;}
+.portfolio-btn-primary{background:var(--grad-teal);color:#fff;box-shadow:0 6px 18px rgba(26,188,179,.25);}
+.portfolio-btn-primary:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(26,188,179,.38);}
+.portfolio-btn-ghost{background:rgba(255,255,255,.03);color:var(--white);border-color:rgba(148,163,184,.3);}
+.portfolio-btn-ghost:hover{border-color:var(--teal);color:var(--teal);background:rgba(26,188,179,.08);transform:translateY(-2px);}
+.portfolio-empty{grid-column:1/-1;text-align:center;padding:3rem;color:var(--gray-400);}
 
 /* ── SOBRE PAGE ──────────────────────────────────────────────── */
 .about-page{padding:5rem 0;background:var(--navy);}

@@ -42,7 +42,7 @@ PROJECTS = [
         ),
         "category": "mobile",
         "tags": "NestJS, Expo, React Native, Next.js, Mercado Pago",
-        "project_url": "https://app.barberone.store",
+        "project_url": "https://barberone.store",
         "sort_order": 1,
     },
     {
