@@ -7,7 +7,7 @@ from typing import List, Optional
 import os, sys, uuid, shutil
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
-from database import get_db
+from database import get_db, engine
 from routers.auth import get_current_admin
 
 router = APIRouter()
@@ -15,6 +15,37 @@ router = APIRouter()
 BACKEND_DIR  = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 UPLOADS_DIR  = os.path.join(BACKEND_DIR, "uploads", "portfolio")
 os.makedirs(UPLOADS_DIR, exist_ok=True)
+
+def _ensure_schema():
+    """Migração idempotente: adiciona portfolio_projects.project_url se ainda não existir."""
+    try:
+        with engine.begin() as conn:
+            col = conn.execute(text(
+                "SELECT COUNT(*) FROM information_schema.COLUMNS "
+                "WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'portfolio_projects' "
+                "AND COLUMN_NAME = 'project_url'"
+            )).scalar()
+            if not col:
+                conn.execute(text(
+                    "ALTER TABLE portfolio_projects "
+                    "ADD COLUMN project_url VARCHAR(500) NULL DEFAULT NULL AFTER tags"
+                ))
+    except Exception as e:  # tabela ainda não existe ou sem permissão: create_tables.py cuida
+        print(f"[portfolio] aviso na migração de project_url: {e}")
+
+
+_ensure_schema()
+
+
+def _clean_url(url: str) -> Optional[str]:
+    """Aceita apenas http(s); retorna None para vazio."""
+    url = (url or "").strip()
+    if not url:
+        return None
+    if not url.lower().startswith(("http://", "https://")):
+        raise HTTPException(status_code=400, detail="Link do projeto deve começar com http:// ou https://")
+    return url[:500]
+
 
 ALLOWED_EXT = {".jpg", ".jpeg", ".png", ".webp", ".gif"}
 MAX_FILE_SIZE = 8 * 1024 * 1024  # 8MB por imagem
@@ -141,6 +172,7 @@ async def create_project(
     description: str = Form(...),
     category: str = Form("web"),
     tags: str = Form(""),
+    project_url: str = Form(""),
     is_published: bool = Form(True),
     files: List[UploadFile] = File(default=[]),
     db=Depends(get_db),
@@ -149,12 +181,12 @@ async def create_project(
     """Cria um novo projeto com upload de múltiplas imagens."""
     result = db.execute(
         text("""
-            INSERT INTO portfolio_projects (title, description, category, tags, is_published)
-            VALUES (:title, :description, :category, :tags, :published)
+            INSERT INTO portfolio_projects (title, description, category, tags, project_url, is_published)
+            VALUES (:title, :description, :category, :tags, :url, :published)
         """),
         {
             "title": title, "description": description,
-            "category": category, "tags": tags,
+            "category": category, "tags": tags, "url": _clean_url(project_url),
             "published": 1 if is_published else 0,
         }
     )
@@ -185,6 +217,7 @@ async def update_project(
     description: str = Form(...),
     category: str = Form("web"),
     tags: str = Form(""),
+    project_url: str = Form(""),
     is_published: bool = Form(True),
     files: List[UploadFile] = File(default=[]),
     db=Depends(get_db),
@@ -201,12 +234,13 @@ async def update_project(
         text("""
             UPDATE portfolio_projects
             SET title = :title, description = :description,
-                category = :category, tags = :tags, is_published = :published
+                category = :category, tags = :tags, project_url = :url,
+                is_published = :published
             WHERE id = :id
         """),
         {
             "title": title, "description": description,
-            "category": category, "tags": tags,
+            "category": category, "tags": tags, "url": _clean_url(project_url),
             "published": 1 if is_published else 0, "id": project_id,
         }
     )

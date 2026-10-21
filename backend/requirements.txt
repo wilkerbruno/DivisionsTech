@@ -22,3 +22,6 @@ httpx>=0.27.0
 
 # Utilitários
 aiofiles>=23.2.1
+
+# Passenger/cPanel (ponte WSGI para FastAPI)
+a2wsgi>=1.10.0

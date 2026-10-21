@@ -210,6 +210,8 @@ a{text-decoration:none;color:inherit;}
 .portfolio-content p{color:var(--gray-400);font-size:.9rem;line-height:1.6;margin-bottom:1rem;}
 .portfolio-link{display:inline-flex;align-items:center;gap:.4rem;color:var(--teal);font-size:.85rem;font-weight:600;transition:gap .2s;}
 .portfolio-link:hover{gap:.7rem;}
+.portfolio-actions{display:flex;flex-wrap:wrap;gap:.6rem 1.25rem;align-items:center;}
+.portfolio-link-primary{background:var(--grad-teal);color:#fff;padding:.5rem 1rem;border-radius:999px;}
 
 /* ── SOBRE PAGE ──────────────────────────────────────────────── */
 .about-page{padding:5rem 0;background:var(--navy);}

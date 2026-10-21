@@ -371,6 +371,12 @@
     </div>
 
     <div class="form-group" style="margin-top:.9rem">
+      <label>Link do projeto (opcional)</label>
+      <input type="url" id="projectUrl" placeholder="https://app.exemplo.com"
+        style="width:100%;padding:.8rem;background:var(--navy);border:1px solid var(--navy-border);border-radius:10px;color:#fff;font-family:inherit;outline:none">
+    </div>
+
+    <div class="form-group" style="margin-top:.9rem">
       <label style="display:flex;align-items:center;gap:.5rem;cursor:pointer">
         <input type="checkbox" id="projectPublished" checked style="width:auto">
         Publicar no site imediatamente
@@ -684,6 +690,7 @@ function openProjectModal(id) {
   document.getElementById('projectDescription').value = '';
   document.getElementById('projectCategory').value = 'web';
   document.getElementById('projectTags').value = '';
+  document.getElementById('projectUrl').value = '';
   document.getElementById('projectPublished').checked = true;
   document.getElementById('projectFiles').value = '';
   document.getElementById('existingImagesBox').style.display = 'none';
@@ -698,6 +705,7 @@ function openProjectModal(id) {
       document.getElementById('projectDescription').value = p.description;
       document.getElementById('projectCategory').value = p.category;
       document.getElementById('projectTags').value = p.tags || '';
+      document.getElementById('projectUrl').value = p.project_url || '';
       document.getElementById('projectPublished').checked = !!p.is_published;
       document.getElementById('projectModalTitle').innerHTML = 'Editar <span>Projeto</span>';
 
@@ -736,6 +744,7 @@ async function saveProject() {
   fd.append('description', description);
   fd.append('category', document.getElementById('projectCategory').value);
   fd.append('tags', document.getElementById('projectTags').value.trim());
+  fd.append('project_url', document.getElementById('projectUrl').value.trim());
   fd.append('is_published', document.getElementById('projectPublished').checked);
 
   const files = document.getElementById('projectFiles').files;
