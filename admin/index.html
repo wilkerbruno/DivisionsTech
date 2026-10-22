@@ -148,6 +148,12 @@
       border-radius:50%;background:rgba(15,23,42,.85);color:#fff;border:1px solid var(--navy-border);
       cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.65rem;}
     .existing-image-thumb .fit-toggle-btn:hover{border-color:var(--teal);}
+    .existing-image-thumb .crop-btn{position:absolute;bottom:3px;right:3px;width:22px;height:22px;
+      border-radius:50%;background:rgba(15,23,42,.85);color:#fff;border:1px solid var(--navy-border);
+      cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.6rem;}
+    .existing-image-thumb .crop-btn:hover{border-color:var(--teal);}
+    #cropModal{z-index:9100}
+    #cropViewport img{will-change:transform}
 
     /* Responsive */
     @media(max-width:768px){
@@ -408,6 +414,26 @@
   </div>
 </div>
 
+<!-- MODAL CORTE/AJUSTE DE IMAGEM -->
+<div id="cropModal" class="modal-bg">
+  <div class="modal" style="max-width:480px">
+    <h3>Ajustar <span>imagem</span></h3>
+    <p style="font-size:.8rem;color:var(--gray-400);margin-bottom:.8rem">Arraste pra posicionar e use o zoom pra enquadrar a logo inteira. O quadro mostra exatamente o que vai aparecer no card.</p>
+    <div id="cropViewport" style="position:relative;width:100%;aspect-ratio:1.9/1;overflow:hidden;border-radius:12px;background:#0d1b22;border:1px solid var(--navy-border);cursor:grab;touch-action:none">
+      <img id="cropImage" style="position:absolute;top:0;left:0;max-width:none;user-select:none" draggable="false">
+    </div>
+    <div style="display:flex;align-items:center;gap:.6rem;margin-top:.9rem">
+      <i class="fas fa-search-minus" style="color:var(--gray-400)"></i>
+      <input type="range" id="cropZoom" min="100" max="400" value="100" style="flex:1" oninput="onCropZoomChange()">
+      <i class="fas fa-search-plus" style="color:var(--gray-400)"></i>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeCropModal()">Cancelar</button>
+      <button class="btn btn-teal" onclick="confirmCrop()">Aplicar corte</button>
+    </div>
+  </div>
+</div>
+
 <script>
 // Detecta automaticamente a URL da API com base em onde o site está hospedado.
 // Em localhost mantém a porta 8000 explícita; em produção usa o mesmo domínio (sem porta),
@@ -642,18 +668,19 @@ async function authFetch(url, opts={}) {
 // ════════════════════════════════════════════════════════════
 let allProjects = [];
 let pendingFits = [];
+let selectedFiles = [];
 const CATEGORY_LABEL = {web:'Sites & Web', sistema:'Sistemas', automacao:'Automações', mobile:'Mobile'};
 
 function onProjectFilesChange() {
-  const files = document.getElementById('projectFiles').files;
-  pendingFits = Array.from(files).map(() => 'cover');
+  const input = document.getElementById('projectFiles');
+  selectedFiles = Array.from(input.files);
+  pendingFits = selectedFiles.map(() => 'cover');
   renderNewFilesPreview();
 }
 
 function renderNewFilesPreview() {
-  const files = document.getElementById('projectFiles').files;
   const box = document.getElementById('newFilesPreview');
-  box.innerHTML = Array.from(files).map((file, idx) => {
+  box.innerHTML = selectedFiles.map((file, idx) => {
     const fit = pendingFits[idx] || 'cover';
     const icon = fit === 'contain' ? 'fa-compress' : 'fa-expand';
     const url = URL.createObjectURL(file);
@@ -663,6 +690,7 @@ function renderNewFilesPreview() {
         ${idx === 0 ? '<span class="cover-badge">Capa</span>' : ''}
         <button class="fit-toggle-btn" title="${fit === 'contain' ? 'Mostrando logo inteira — clique p/ preencher' : 'Preenchendo o quadro — clique p/ mostrar logo inteira'}"
           onclick="toggleNewFileFit(${idx})"><i class="fas ${icon}"></i></button>
+        <button class="crop-btn" title="Ajustar/cortar imagem" onclick="openCropper('${url}', {type:'new', idx:${idx}})"><i class="fas fa-crop-simple"></i></button>
       </div>
     `;
   }).join('');
@@ -734,6 +762,7 @@ function openProjectModal(id) {
   document.getElementById('projectPublished').checked = true;
   document.getElementById('projectFiles').value = '';
   pendingFits = [];
+  selectedFiles = [];
   document.getElementById('newFilesPreview').innerHTML = '';
   document.getElementById('existingImagesBox').style.display = 'none';
   document.getElementById('existingImagesGrid').innerHTML = '';
@@ -757,12 +786,14 @@ function openProjectModal(id) {
           const fit = img.fit_mode === 'contain' ? 'contain' : 'cover';
           const nextFit = fit === 'contain' ? 'cover' : 'contain';
           const icon = fit === 'contain' ? 'fa-compress' : 'fa-expand';
+          const imgUrl = `${API}/portfolio/image/${img.filename}`;
           return `
           <div class="existing-image-thumb">
-            <img src="${API}/portfolio/image/${img.filename}" style="object-fit:${fit}">
+            <img src="${imgUrl}" style="object-fit:${fit}">
             ${img.is_cover ? '<span class="cover-badge">Capa</span>' : ''}
             <button class="fit-toggle-btn" title="${fit === 'contain' ? 'Mostrando logo inteira — clique p/ preencher' : 'Preenchendo o quadro — clique p/ mostrar logo inteira'}"
               onclick="toggleImageFit(${p.id}, ${img.id}, '${nextFit}')"><i class="fas ${icon}"></i></button>
+            <button class="crop-btn" title="Ajustar/cortar imagem" onclick="openCropper('${imgUrl}', {type:'existing', projectId:${p.id}, imageId:${img.id}})"><i class="fas fa-crop-simple"></i></button>
             <button class="del-img-btn" onclick="deleteProjectImage(${p.id}, ${img.id})"><i class="fas fa-times"></i></button>
           </div>
         `;
@@ -796,11 +827,10 @@ async function saveProject() {
   fd.append('project_url', document.getElementById('projectUrl').value.trim());
   fd.append('is_published', document.getElementById('projectPublished').checked);
 
-  const files = document.getElementById('projectFiles').files;
-  for (let i = 0; i < files.length; i++) {
-    fd.append('files', files[i]);
+  selectedFiles.forEach((file, i) => {
+    fd.append('files', file);
     fd.append('fits', pendingFits[i] || 'cover');
-  }
+  });
 
   const btn = document.getElementById('saveProjectBtn');
   btn.disabled = true;
@@ -845,6 +875,152 @@ async function toggleImageFit(projectId, imageId, newFit) {
     await loadPortfolio();
     openProjectModal(projectId);
   }
+}
+
+// ════════════════════════════════════════════════════════════
+//  CORTE/AJUSTE DE IMAGEM (pan + zoom sobre um quadro fixo)
+// ════════════════════════════════════════════════════════════
+let cropTarget = null;
+let cropDrag = null;
+const cropState = { scale: 1, minScale: 1, tx: 0, ty: 0, naturalW: 0, naturalH: 0 };
+const CROP_OUT_W = 800;
+
+function openCropper(src, target) {
+  cropTarget = target;
+  const img = document.getElementById('cropImage');
+  img.onload = () => {
+    const vp = document.getElementById('cropViewport');
+    const vpW = vp.clientWidth, vpH = vp.clientHeight;
+    cropState.naturalW = img.naturalWidth;
+    cropState.naturalH = img.naturalHeight;
+    cropState.minScale = Math.max(vpW / img.naturalWidth, vpH / img.naturalHeight);
+    cropState.scale = cropState.minScale;
+    cropState.tx = (vpW - img.naturalWidth * cropState.scale) / 2;
+    cropState.ty = (vpH - img.naturalHeight * cropState.scale) / 2;
+    document.getElementById('cropZoom').value = 100;
+    applyCropTransform();
+  };
+  img.src = src;
+  document.getElementById('cropModal').classList.add('open');
+}
+
+function closeCropModal() {
+  document.getElementById('cropModal').classList.remove('open');
+  cropTarget = null;
+}
+
+function clampCropTranslate() {
+  const vp = document.getElementById('cropViewport');
+  const vpW = vp.clientWidth, vpH = vp.clientHeight;
+  const dispW = cropState.naturalW * cropState.scale;
+  const dispH = cropState.naturalH * cropState.scale;
+  cropState.tx = Math.min(0, Math.max(vpW - dispW, cropState.tx));
+  cropState.ty = Math.min(0, Math.max(vpH - dispH, cropState.ty));
+}
+
+function applyCropTransform() {
+  clampCropTranslate();
+  const img = document.getElementById('cropImage');
+  img.style.width  = (cropState.naturalW * cropState.scale) + 'px';
+  img.style.height = (cropState.naturalH * cropState.scale) + 'px';
+  img.style.transform = `translate(${cropState.tx}px, ${cropState.ty}px)`;
+}
+
+function onCropZoomChange() {
+  const factor = document.getElementById('cropZoom').value / 100;
+  const vp = document.getElementById('cropViewport');
+  const vpW = vp.clientWidth, vpH = vp.clientHeight;
+  const cx = vpW / 2, cy = vpH / 2;
+  const imgX = (cx - cropState.tx) / cropState.scale;
+  const imgY = (cy - cropState.ty) / cropState.scale;
+  cropState.scale = cropState.minScale * factor;
+  cropState.tx = cx - imgX * cropState.scale;
+  cropState.ty = cy - imgY * cropState.scale;
+  applyCropTransform();
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const vp = document.getElementById('cropViewport');
+  if (!vp) return;
+  vp.addEventListener('pointerdown', e => {
+    cropDrag = { x: e.clientX, y: e.clientY, tx: cropState.tx, ty: cropState.ty };
+    vp.setPointerCapture(e.pointerId);
+    vp.style.cursor = 'grabbing';
+  });
+  vp.addEventListener('pointermove', e => {
+    if (!cropDrag) return;
+    cropState.tx = cropDrag.tx + (e.clientX - cropDrag.x);
+    cropState.ty = cropDrag.ty + (e.clientY - cropDrag.y);
+    applyCropTransform();
+  });
+  const endDrag = () => { cropDrag = null; vp.style.cursor = 'grab'; };
+  vp.addEventListener('pointerup', endDrag);
+  vp.addEventListener('pointerleave', endDrag);
+});
+
+function cropToBlob() {
+  return new Promise(resolve => {
+    const vp = document.getElementById('cropViewport');
+    const vpW = vp.clientWidth, vpH = vp.clientHeight;
+    const outW = CROP_OUT_W, outH = Math.round(CROP_OUT_W / (vpW / vpH));
+    const canvas = document.createElement('canvas');
+    canvas.width = outW; canvas.height = outH;
+    const ctx = canvas.getContext('2d');
+    const img = document.getElementById('cropImage');
+    const sx = -cropState.tx / cropState.scale;
+    const sy = -cropState.ty / cropState.scale;
+    const sw = vpW / cropState.scale;
+    const sh = vpH / cropState.scale;
+    ctx.drawImage(img, sx, sy, sw, sh, 0, 0, outW, outH);
+    canvas.toBlob(blob => resolve(blob), 'image/png');
+  });
+}
+
+async function confirmCrop() {
+  if (!cropTarget) return;
+  const blob = await cropToBlob();
+  if (cropTarget.type === 'new') {
+    const file = new File([blob], `logo-${Date.now()}.png`, { type: 'image/png' });
+    selectedFiles[cropTarget.idx] = file;
+    renderNewFilesPreview();
+  } else if (cropTarget.type === 'existing') {
+    await replaceExistingImage(cropTarget.projectId, cropTarget.imageId, blob);
+  }
+  closeCropModal();
+}
+
+async function replaceExistingImage(projectId, imageId, blob) {
+  const p = allProjects.find(x => x.id === projectId);
+  if (!p) return;
+  const oldImg = (p.images || []).find(i => i.id === imageId);
+  const wasCover = oldImg ? !!oldImg.is_cover : false;
+  const fit = oldImg ? (oldImg.fit_mode || 'cover') : 'cover';
+
+  const fd = new FormData();
+  fd.append('title', p.title);
+  fd.append('description', p.description);
+  fd.append('category', p.category);
+  fd.append('tags', p.tags || '');
+  fd.append('project_url', p.project_url || '');
+  fd.append('is_published', !!p.is_published);
+  fd.append('files', new File([blob], `logo-${Date.now()}.png`, { type: 'image/png' }));
+  fd.append('fits', fit);
+
+  const r = await authFetch(`${API}/portfolio/${projectId}`, { method: 'PUT', body: fd });
+  if (!r || !r.ok) return;
+
+  const r2 = await authFetch(`${API}/portfolio/${projectId}`);
+  if (!r2) return;
+  const fresh = await r2.json();
+  const newImg = (fresh.images || []).reduce((a, b) => (!a || b.id > a.id ? b : a), null);
+
+  if (newImg && wasCover) {
+    await authFetch(`${API}/portfolio/${projectId}/cover/${newImg.id}`, { method: 'PUT' });
+  }
+  await authFetch(`${API}/portfolio/${projectId}/image/${imageId}`, { method: 'DELETE' });
+
+  await loadPortfolio();
+  openProjectModal(projectId);
 }
 </script>
 </body>
