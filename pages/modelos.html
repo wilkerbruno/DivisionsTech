@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Modelos de Sites — Divisions Tech</title>
+  <meta name="description" content="Veja exemplos de landing pages prontas por tema e peça a sua versão personalizada com a Divisions Tech.">
+  <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <link rel="icon" type="image/jpeg" href="../assets/img/divisions.jpeg">
+</head>
+<body>
+<div class="loading-overlay" id="loadingOverlay" style="display:none"><div class="loading-spinner"></div></div>
+<header class="header" id="header">
+  <nav class="nav-container">
+    <button class="mobile-menu-toggle" id="mobileMenuToggle"><i class="fas fa-bars"></i></button>
+    <a href="../index.html" class="logo-container">
+      <div class="logo-icon"><img src="../assets/img/divisions.jpeg" alt="Divisions Tech"></div>
+      <span>Divisions Tech</span>
+    </a>
+    <ul class="nav-menu" id="navMenu">
+      <li><a href="../index.html"    class="nav-link">Início</a></li>
+      <li><a href="servicos.html"    class="nav-link">Serviços</a></li>
+      <li><a href="hospedagem.html"  class="nav-link">Hospedagem</a></li>
+      <li><a href="portfolio.html"   class="nav-link">Portfólio</a></li>
+      <li><a href="modelos.html"     class="nav-link active">Modelos</a></li>
+      <li><a href="sobre.html"       class="nav-link">Sobre</a></li>
+      <li><a href="contato.html"     class="nav-link">Contato</a></li>
+      <li><a href="contato.html"     class="cta-button">Solicitar Orçamento</a></li>
+    </ul>
+    <div class="nav-overlay" id="navOverlay"></div>
+  </nav>
+</header>
+
+<section class="page-hero">
+  <div class="container page-hero-content">
+    <span class="badge">Exemplos prontos</span>
+    <h1>Modelos <span>de Sites</span></h1>
+    <p>Dá uma olhada em exemplos de landing pages por segmento. Gostou de um estilo? A gente personaliza do seu jeito.</p>
+  </div>
+</section>
+
+<section class="portfolio-page">
+  <div class="container">
+    <div class="portfolio-grid" id="templatesGrid">
+      <div class="portfolio-loading" style="text-align:center;padding:3rem;color:var(--gray-400);grid-column:1/-1">
+        <i class="fas fa-spinner fa-spin" style="font-size:1.5rem;margin-bottom:.75rem;display:block;color:var(--teal)"></i>
+        Carregando modelos...
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="home-cta">
+  <div class="container"><div class="fade-in">
+    <span class="badge">Não achou o estilo ideal?</span>
+    <h2>A gente cria <span>do seu jeito.</span></h2>
+    <p>Fala com a gente e monta uma landing page sob medida pro seu negócio.</p>
+    <a href="contato.html" class="btn-primary"><i class="fas fa-paper-plane"></i> Solicitar Orçamento</a>
+  </div></div>
+</section>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-content">
+      <div class="footer-brand"><h3>Divisions Tech</h3><p>Desenvolvimento de software, sites, automações e hospedagem de alta performance.</p>
+        <div class="social-links">
+          <a href="https://www.instagram.com/divisionstech/" class="social-link" target="_blank"><i class="fab fa-instagram"></i></a>
+          <a href="https://wa.me/5583993654478" class="social-link" target="_blank"><i class="fab fa-whatsapp"></i></a>
+          <a href="mailto:wilker.gandra@divisionstech.com" class="social-link"><i class="fas fa-envelope"></i></a>
+        </div>
+      </div>
+      <div class="footer-section"><h4>Serviços</h4><ul>
+        <li><a href="servicos.html">Desenvolvimento</a></li><li><a href="servicos.html">Sites</a></li>
+        <li><a href="servicos.html">Automações</a></li><li><a href="hospedagem.html">Hospedagem</a></li>
+      </ul></div>
+      <div class="footer-section"><h4>Empresa</h4><ul>
+        <li><a href="sobre.html">Sobre Nós</a></li><li><a href="portfolio.html">Portfólio</a></li>
+        <li><a href="modelos.html">Modelos</a></li>
+        <li><a href="contato.html">Contato</a></li>
+      </ul></div>
+    </div>
+    <div class="footer-bottom"><p>&copy; 2025 Divisions Tech. Todos os direitos reservados.</p></div>
+  </div>
+</footer>
+<div class="floating-contacts">
+  <a href="https://wa.me/5583993654478" class="floating-btn whatsapp" target="_blank"><i class="fab fa-whatsapp"></i></a>
+  <a href="https://www.instagram.com/divisionstech/" class="floating-btn instagram" target="_blank"><i class="fab fa-instagram"></i></a>
+</div>
+<script>
+const TEMPLATES_API = (() => {
+  const { hostname, protocol } = window.location;
+  if (hostname === 'localhost' || hostname === '127.0.0.1') {
+    return 'http://localhost:8000/api/templates/public';
+  }
+  return `${protocol}//${window.location.host}/api/templates/public`;
+})();
+
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+function logoNotFound(img) {
+  const holder = img.closest('.portfolio-logo');
+  holder.outerHTML = `<div class="portfolio-preview-icon"><i class="fas fa-layer-group"></i></div>`;
+}
+
+async function loadTemplates() {
+  const grid = document.getElementById('templatesGrid');
+  try {
+    const res = await fetch(TEMPLATES_API);
+    if (!res.ok) throw new Error('Falha ao buscar modelos');
+    const themes = await res.json();
+
+    if (!themes.length) {
+      grid.innerHTML = `
+        <div class="portfolio-empty">
+          <i class="fas fa-folder-open" style="font-size:1.8rem;margin-bottom:.75rem;display:block;color:var(--teal)"></i>
+          Novos modelos em breve. Volte para conferir!
+        </div>`;
+      return;
+    }
+
+    grid.innerHTML = themes.map(t => {
+      const visual = t.image
+        ? `<div class="portfolio-logo"><img src="${esc(t.image)}" alt="${esc(t.title)}" onerror="logoNotFound(this)"></div>`
+        : `<div class="portfolio-preview-icon"><i class="fas fa-layer-group"></i></div>`;
+
+      const links = (t.links || []).map(l => `
+        <a href="${esc(l.url)}" class="portfolio-btn portfolio-btn-ghost" target="_blank" rel="noopener noreferrer">
+          ${esc(l.label)} <i class="fas fa-arrow-up-right-from-square"></i>
+        </a>
+      `).join('');
+
+      return `
+        <div class="portfolio-item fade-in visible">
+          <div class="portfolio-preview" style="background:linear-gradient(135deg,#0d2630,#0B1120)">
+            <div class="portfolio-preview-glow"></div>
+            ${visual}
+          </div>
+          <div class="portfolio-content">
+            <h3>${esc(t.title)}</h3>
+            <p>${esc(t.description)}</p>
+            <div class="portfolio-actions">
+              ${links}
+              <a href="contato.html" class="portfolio-btn portfolio-btn-primary">Quero algo parecido</a>
+            </div>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+  } catch (err) {
+    console.error('Erro ao carregar modelos:', err);
+    grid.innerHTML = `
+      <div class="portfolio-empty">
+        <i class="fas fa-exclamation-triangle" style="font-size:1.8rem;margin-bottom:.75rem;display:block;color:var(--teal)"></i>
+        Não foi possível carregar os modelos agora. Tente novamente em breve.
+      </div>`;
+  }
+}
+
+document.addEventListener('DOMContentLoaded', loadTemplates);
+</script>
+<script src="../assets/js/script.js"></script>
+</body></html>

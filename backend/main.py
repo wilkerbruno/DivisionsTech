@@ -19,7 +19,7 @@ ROOT_DIR    = os.path.abspath(os.path.join(BACKEND_DIR, ".."))
 
 sys.path.insert(0, BACKEND_DIR)
 
-from routers import auth, clients, payments, webhooks, admin, portfolio
+from routers import auth, clients, payments, webhooks, admin, portfolio, templates
 from database import test_connection
 
 # Garante que a pasta de uploads existe (importante em deploys novos)
@@ -85,6 +85,7 @@ app.include_router(payments.router,  prefix="/api/payments",  tags=["Pagamentos"
 app.include_router(webhooks.router,  prefix="/api/webhooks",  tags=["Webhooks"])
 app.include_router(admin.router,     prefix="/api/admin",     tags=["Admin"])
 app.include_router(portfolio.router, prefix="/api/portfolio", tags=["Portfólio"])
+app.include_router(templates.router, prefix="/api/templates", tags=["Modelos"])
 
 
 @app.get("/api/health")

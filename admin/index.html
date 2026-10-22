@@ -5,6 +5,7 @@
   <title>Admin — Divisions Tech</title>
   <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
   <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
+  <link rel="icon" type="image/jpeg" href="../assets/img/divisions.jpeg">
   <style>
     :root{
       --teal:#1ABCB3;--teal-dark:#0E8F89;--navy:#0B1120;--navy-card:#111827;
@@ -199,6 +200,7 @@
       <div class="nav-item active" onclick="showSection('dashboard')"><i class="fas fa-chart-line"></i> Dashboard</div>
       <div class="nav-item" onclick="showSection('clients')"><i class="fas fa-users"></i> Clientes</div>
       <div class="nav-item" onclick="showSection('portfolio')"><i class="fas fa-images"></i> Portfólio</div>
+      <div class="nav-item" onclick="showSection('templates')"><i class="fas fa-layer-group"></i> Modelos</div>
       <div class="nav-item" onclick="showSection('settings')"><i class="fas fa-cog"></i> Configurações</div>
     </nav>
     <div class="sidebar-bottom">
@@ -287,6 +289,20 @@
       <div id="portfolioEmpty" style="text-align:center;padding:3rem;color:var(--gray-400);display:none">
         <i class="fas fa-images" style="font-size:2rem;margin-bottom:.75rem;display:block;color:var(--teal)"></i>
         Nenhum projeto cadastrado ainda. Clique em "Novo Projeto" para começar.
+      </div>
+    </section>
+
+    <!-- MODELOS (landing pages de exemplo, por tema) -->
+    <section id="section-templates" class="page-section">
+      <div class="page-header">
+        <h1>Modelos <span>de Sites</span></h1>
+        <button class="btn btn-teal" onclick="openThemeModal()"><i class="fas fa-plus"></i> Novo Tema</button>
+      </div>
+
+      <div id="templatesGrid" class="portfolio-admin-grid"></div>
+      <div id="templatesEmpty" style="text-align:center;padding:3rem;color:var(--gray-400);display:none">
+        <i class="fas fa-layer-group" style="font-size:2rem;margin-bottom:.75rem;display:block;color:var(--teal)"></i>
+        Nenhum tema cadastrado ainda. Clique em "Novo Tema" para começar.
       </div>
     </section>
 
@@ -434,6 +450,58 @@
   </div>
 </div>
 
+<!-- MODAL TEMA DE MODELO -->
+<div id="themeModal" class="modal-bg">
+  <div class="modal" style="max-width:640px">
+    <h3 id="themeModalTitle">Novo <span>Tema</span></h3>
+    <input type="hidden" id="themeId">
+
+    <div class="form-group">
+      <label>Título do Tema</label>
+      <input type="text" id="themeTitle" placeholder="Ex: Barbearias & Salões"
+        style="width:100%;padding:.8rem;background:var(--navy);border:1px solid var(--navy-border);border-radius:10px;color:#fff;font-family:inherit;outline:none">
+    </div>
+
+    <div class="form-group" style="margin-top:.9rem">
+      <label>Descrição</label>
+      <textarea id="themeDescription" rows="3" placeholder="Conte sobre esse estilo de página, pra quem serve..."
+        style="width:100%;padding:.8rem;background:var(--navy);border:1px solid var(--navy-border);border-radius:10px;color:#fff;font-family:inherit;outline:none;resize:vertical"></textarea>
+    </div>
+
+    <div class="form-group" style="margin-top:.9rem">
+      <label style="display:flex;align-items:center;gap:.5rem;cursor:pointer">
+        <input type="checkbox" id="themePublished" checked style="width:auto">
+        Publicar no site imediatamente
+      </label>
+    </div>
+
+    <div class="form-group" style="margin-top:.9rem">
+      <label>Imagem/capa do tema</label>
+      <input type="file" id="themeFile" accept="image/png,image/jpeg,image/webp,image/gif"
+        style="width:100%;padding:.8rem;background:var(--navy);border:1px solid var(--navy-border);border-radius:10px;color:#fff;font-family:inherit;outline:none"
+        onchange="onThemeFileChange()">
+      <p style="font-size:.78rem;color:var(--gray-400);margin-top:.4rem">Clique no ícone de corte na miniatura pra ajustar o enquadramento.</p>
+      <div id="themeFilePreview" style="display:grid;grid-template-columns:repeat(4,1fr);gap:.5rem;margin-top:.6rem"></div>
+      <div id="themeExistingImageBox" style="display:none;margin-top:.6rem">
+        <div id="themeExistingImageGrid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:.5rem"></div>
+      </div>
+    </div>
+
+    <div class="form-group" style="margin-top:1.1rem">
+      <label>Páginas de exemplo (até 4 links)</label>
+      <div id="themeLinksBox"></div>
+      <button type="button" class="btn btn-outline" id="themeAddLinkBtn" style="margin-top:.5rem" onclick="addThemeLinkRow()">
+        <i class="fas fa-plus"></i> Adicionar exemplo
+      </button>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeThemeModal()">Cancelar</button>
+      <button class="btn btn-teal" onclick="saveTheme()" id="saveThemeBtn">Salvar Tema</button>
+    </div>
+  </div>
+</div>
+
 <script>
 // Detecta automaticamente a URL da API com base em onde o site está hospedado.
 // Em localhost mantém a porta 8000 explícita; em produção usa o mesmo domínio (sem porta),
@@ -505,6 +573,7 @@ function showSection(name) {
   document.getElementById(`section-${name}`).classList.add('active');
   event.currentTarget.classList.add('active');
   if (name === 'portfolio') loadPortfolio();
+  if (name === 'templates') loadTemplates();
 }
 
 // ── Stats ────────────────────────────────────────────────────
@@ -1000,6 +1069,11 @@ async function confirmCrop() {
     renderNewFilesPreview();
   } else if (cropTarget.type === 'existing') {
     await replaceExistingImage(cropTarget.projectId, cropTarget.imageId, blob);
+  } else if (cropTarget.type === 'theme-new') {
+    themeSelectedFile = new File([blob], `tema-${Date.now()}.png`, { type: 'image/png' });
+    renderThemeFilePreview();
+  } else if (cropTarget.type === 'theme-existing') {
+    await replaceThemeImage(cropTarget.themeId, blob);
   }
   closeCropModal();
 }
@@ -1036,6 +1110,224 @@ async function replaceExistingImage(projectId, imageId, blob) {
 
   await loadPortfolio();
   openProjectModal(projectId);
+}
+
+// ════════════════════════════════════════════════════════════
+//  MODELOS (temas de landing pages de exemplo)
+// ════════════════════════════════════════════════════════════
+let allThemes = [];
+let themeSelectedFile = null;
+let themeExistingImage = null; // {filename} do tema em edição
+let themeLinks = [];
+const MAX_THEME_LINKS = 4;
+
+async function loadTemplates() {
+  const r = await authFetch(`${API}/templates/`);
+  if (!r) return;
+  allThemes = await r.json();
+  renderTemplates();
+}
+
+function renderTemplates() {
+  const grid  = document.getElementById('templatesGrid');
+  const empty = document.getElementById('templatesEmpty');
+
+  if (!allThemes.length) {
+    grid.innerHTML = '';
+    empty.style.display = 'block';
+    return;
+  }
+  empty.style.display = 'none';
+
+  grid.innerHTML = allThemes.map(t => {
+    const cover = t.image_filename
+      ? `<img src="${API}/templates/image/${t.image_filename}" alt="${t.title}" style="object-fit:contain;padding:12%;box-sizing:border-box;background:#0d1b22">`
+      : `<i class="fas fa-layer-group no-img"></i>`;
+    return `
+      <div class="portfolio-admin-card">
+        <div class="portfolio-admin-cover">
+          ${cover}
+          <span class="portfolio-admin-badge ${t.is_published ? 'published' : 'draft'}">
+            ${t.is_published ? 'Publicado' : 'Rascunho'}
+          </span>
+        </div>
+        <div class="portfolio-admin-body">
+          <h4>${t.title}</h4>
+          <p>${t.description}</p>
+          <div class="portfolio-admin-meta">
+            <span>${(t.links || []).length} exemplo${(t.links || []).length !== 1 ? 's' : ''}</span>
+          </div>
+          <div class="portfolio-admin-actions">
+            <button class="btn btn-outline" onclick="openThemeModal(${t.id})"><i class="fas fa-pen"></i> Editar</button>
+            <button class="btn btn-danger" onclick="deleteTheme(${t.id}, '${t.title.replace(/'/g, "\\'")}')"><i class="fas fa-trash"></i></button>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function openThemeModal(id) {
+  document.getElementById('themeId').value = '';
+  document.getElementById('themeTitle').value = '';
+  document.getElementById('themeDescription').value = '';
+  document.getElementById('themePublished').checked = true;
+  document.getElementById('themeFile').value = '';
+  themeSelectedFile = null;
+  themeExistingImage = null;
+  document.getElementById('themeFilePreview').innerHTML = '';
+  document.getElementById('themeExistingImageBox').style.display = 'none';
+  document.getElementById('themeExistingImageGrid').innerHTML = '';
+  themeLinks = [];
+  document.getElementById('themeModalTitle').innerHTML = 'Novo <span>Tema</span>';
+
+  if (id) {
+    const t = allThemes.find(x => x.id === id);
+    if (t) {
+      document.getElementById('themeId').value = t.id;
+      document.getElementById('themeTitle').value = t.title;
+      document.getElementById('themeDescription').value = t.description;
+      document.getElementById('themePublished').checked = !!t.is_published;
+      document.getElementById('themeModalTitle').innerHTML = 'Editar <span>Tema</span>';
+      themeLinks = (t.links || []).map(l => ({ label: l.label, url: l.url }));
+
+      if (t.image_filename) {
+        themeExistingImage = { filename: t.image_filename };
+        const imgUrl = `${API}/templates/image/${t.image_filename}`;
+        document.getElementById('themeExistingImageBox').style.display = 'block';
+        document.getElementById('themeExistingImageGrid').innerHTML = `
+          <div class="existing-image-thumb">
+            <img src="${imgUrl}" style="object-fit:contain;padding:10%;box-sizing:border-box;background:#0d1b22">
+            <button class="crop-btn" title="Ajustar/cortar imagem" onclick="openCropper('${imgUrl}', {type:'theme-existing', themeId:${t.id}})"><i class="fas fa-crop-simple"></i></button>
+          </div>
+        `;
+      }
+    }
+  }
+
+  renderThemeLinks();
+  document.getElementById('themeModal').classList.add('open');
+}
+
+function closeThemeModal() {
+  document.getElementById('themeModal').classList.remove('open');
+}
+
+function onThemeFileChange() {
+  const input = document.getElementById('themeFile');
+  themeSelectedFile = input.files[0] || null;
+  renderThemeFilePreview();
+}
+
+function renderThemeFilePreview() {
+  const box = document.getElementById('themeFilePreview');
+  if (!themeSelectedFile) { box.innerHTML = ''; return; }
+  const url = URL.createObjectURL(themeSelectedFile);
+  box.innerHTML = `
+    <div class="existing-image-thumb">
+      <img src="${url}" style="object-fit:contain;padding:10%;box-sizing:border-box;background:#0d1b22">
+      <button class="crop-btn" title="Ajustar/cortar imagem" onclick="openCropper('${url}', {type:'theme-new'})"><i class="fas fa-crop-simple"></i></button>
+      <button class="del-img-btn" onclick="clearThemeFile()"><i class="fas fa-times"></i></button>
+    </div>
+  `;
+}
+
+function clearThemeFile() {
+  themeSelectedFile = null;
+  document.getElementById('themeFile').value = '';
+  renderThemeFilePreview();
+}
+
+function renderThemeLinks() {
+  const box = document.getElementById('themeLinksBox');
+  box.innerHTML = themeLinks.map((link, idx) => `
+    <div style="display:flex;gap:.5rem;margin-top:.5rem">
+      <input type="text" placeholder="Nome (ex: Versão Clara)" value="${(link.label || '').replace(/"/g, '&quot;')}"
+        oninput="themeLinks[${idx}].label = this.value"
+        style="flex:1;padding:.65rem;background:var(--navy);border:1px solid var(--navy-border);border-radius:8px;color:#fff;font-family:inherit;outline:none">
+      <input type="url" placeholder="https://exemplo.com" value="${(link.url || '').replace(/"/g, '&quot;')}"
+        oninput="themeLinks[${idx}].url = this.value"
+        style="flex:1.5;padding:.65rem;background:var(--navy);border:1px solid var(--navy-border);border-radius:8px;color:#fff;font-family:inherit;outline:none">
+      <button type="button" class="del-img-btn" style="position:static;width:36px;height:36px" onclick="removeThemeLinkRow(${idx})"><i class="fas fa-times"></i></button>
+    </div>
+  `).join('');
+  document.getElementById('themeAddLinkBtn').style.display = themeLinks.length >= MAX_THEME_LINKS ? 'none' : 'inline-flex';
+}
+
+function addThemeLinkRow() {
+  if (themeLinks.length >= MAX_THEME_LINKS) return;
+  themeLinks.push({ label: '', url: '' });
+  renderThemeLinks();
+}
+
+function removeThemeLinkRow(idx) {
+  themeLinks.splice(idx, 1);
+  renderThemeLinks();
+}
+
+async function saveTheme() {
+  const id = document.getElementById('themeId').value;
+  const title = document.getElementById('themeTitle').value.trim();
+  const description = document.getElementById('themeDescription').value.trim();
+
+  if (!title || !description) {
+    alert('Preencha título e descrição do tema.');
+    return;
+  }
+
+  const validLinks = themeLinks
+    .map(l => ({ label: (l.label || '').trim(), url: (l.url || '').trim() }))
+    .filter(l => l.label && l.url)
+    .slice(0, MAX_THEME_LINKS);
+
+  const fd = new FormData();
+  fd.append('title', title);
+  fd.append('description', description);
+  fd.append('is_published', document.getElementById('themePublished').checked);
+  fd.append('links', JSON.stringify(validLinks));
+  if (themeSelectedFile) fd.append('file', themeSelectedFile);
+
+  const btn = document.getElementById('saveThemeBtn');
+  btn.disabled = true;
+  btn.textContent = 'Salvando...';
+
+  const url = id ? `${API}/templates/${id}` : `${API}/templates/`;
+  const r = await authFetch(url, { method: id ? 'PUT' : 'POST', body: fd });
+
+  btn.disabled = false;
+  btn.textContent = 'Salvar Tema';
+
+  if (r && r.ok) {
+    closeThemeModal();
+    await loadTemplates();
+  } else if (r) {
+    const err = await r.json().catch(() => ({}));
+    alert(err.detail || 'Erro ao salvar o tema.');
+  }
+}
+
+async function deleteTheme(id, title) {
+  if (!confirm(`Excluir o tema "${title}"? Essa ação não pode ser desfeita.`)) return;
+  const r = await authFetch(`${API}/templates/${id}`, { method: 'DELETE' });
+  if (r && r.ok) await loadTemplates();
+}
+
+async function replaceThemeImage(themeId, blob) {
+  const t = allThemes.find(x => x.id === themeId);
+  if (!t) return;
+
+  const fd = new FormData();
+  fd.append('title', t.title);
+  fd.append('description', t.description);
+  fd.append('is_published', !!t.is_published);
+  fd.append('links', JSON.stringify((t.links || []).map(l => ({ label: l.label, url: l.url }))));
+  fd.append('file', new File([blob], `tema-${Date.now()}.png`, { type: 'image/png' }));
+
+  const r = await authFetch(`${API}/templates/${themeId}`, { method: 'PUT', body: fd });
+  if (!r || !r.ok) return;
+
+  await loadTemplates();
+  openThemeModal(themeId);
 }
 </script>
 </body>

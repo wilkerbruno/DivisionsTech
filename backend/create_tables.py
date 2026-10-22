@@ -153,12 +153,44 @@ CREATE TABLE IF NOT EXISTS portfolio_images (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 """
 
+SQL_TEMPLATE_THEMES = """
+CREATE TABLE IF NOT EXISTS template_themes (
+    id             INT          NOT NULL AUTO_INCREMENT,
+    title          VARCHAR(200) NOT NULL,
+    description    TEXT         NOT NULL,
+    image_filename VARCHAR(255)     NULL DEFAULT NULL,
+    is_published   TINYINT(1)   NOT NULL DEFAULT 1,
+    sort_order     INT          NOT NULL DEFAULT 0,
+    created_at     DATETIME     NOT NULL DEFAULT NOW(),
+    updated_at     DATETIME     NOT NULL DEFAULT NOW() ON UPDATE NOW(),
+    PRIMARY KEY (id),
+    KEY idx_template_themes_published (is_published)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+"""
+
+SQL_TEMPLATE_LINKS = """
+CREATE TABLE IF NOT EXISTS template_links (
+    id         INT          NOT NULL AUTO_INCREMENT,
+    theme_id   INT          NOT NULL,
+    label      VARCHAR(100) NOT NULL,
+    url        VARCHAR(500) NOT NULL,
+    sort_order INT          NOT NULL DEFAULT 0,
+    PRIMARY KEY (id),
+    KEY idx_template_links_theme (theme_id),
+    CONSTRAINT fk_template_links_theme
+        FOREIGN KEY (theme_id) REFERENCES template_themes (id)
+        ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+"""
+
 TABLES = [
     ("admins",             SQL_ADMINS),
     ("clients",            SQL_CLIENTS),
     ("payments",           SQL_PAYMENTS),
     ("portfolio_projects", SQL_PORTFOLIO_PROJECTS),
     ("portfolio_images",   SQL_PORTFOLIO_IMAGES),
+    ("template_themes",    SQL_TEMPLATE_THEMES),
+    ("template_links",     SQL_TEMPLATE_LINKS),
 ]
 
 
