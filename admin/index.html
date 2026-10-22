@@ -794,7 +794,7 @@ function renderPortfolio() {
       const img = p.images.find(i=>i.is_cover) || p.images[0];
       const fit = img.fit_mode === 'contain' ? 'contain' : 'cover';
       const pad = fit === 'contain' ? 'padding:12%;box-sizing:border-box;background:#0d1b22;' : '';
-      cover = `<img src="${API}/portfolio/image/${img.filename}" alt="${p.title}" style="object-fit:${fit};${pad}">`;
+      cover = `<img src="${API}/portfolio/image/${img.filename}" alt="${p.title}" style="object-fit:${fit};${pad}" onerror="this.outerHTML='<i class=\\'fas fa-image no-img\\'></i>'">`;
     }
     return `
       <div class="portfolio-admin-card">
@@ -1141,7 +1141,7 @@ function renderTemplates() {
 
   grid.innerHTML = allThemes.map(t => {
     const cover = t.image_filename
-      ? `<img src="${API}/templates/image/${t.image_filename}" alt="${t.title}" style="object-fit:contain;padding:12%;box-sizing:border-box;background:#0d1b22">`
+      ? `<img src="${API}/templates/image/${t.image_filename}" alt="${t.title}" style="object-fit:contain;padding:12%;box-sizing:border-box;background:#0d1b22" onerror="this.outerHTML='<i class=\\'fas fa-layer-group no-img\\'></i>'">`
       : `<i class="fas fa-layer-group no-img"></i>`;
     return `
       <div class="portfolio-admin-card">

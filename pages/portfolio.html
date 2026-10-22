@@ -124,6 +124,20 @@ function logoNotFound(img) {
   holder.outerHTML = `<div class="portfolio-preview-icon"><i class="fas ${icon}"></i></div>`;
 }
 
+// Capa enviada no admin sumiu (ex: redeploy sem volume persistente) → tenta logo local > ícone da categoria
+function coverImgNotFound(img) {
+  if (img.dataset.stage !== 'local') {
+    img.dataset.stage = 'local';
+    img.style.cssText += 'padding:10%;box-sizing:border-box;background:#0d1b22;object-fit:contain';
+    img.src = img.dataset.fallback;
+    return;
+  }
+  const holder = img.closest('.portfolio-preview');
+  const icon = img.dataset.icon || 'fa-folder';
+  img.remove();
+  holder.insertAdjacentHTML('beforeend', `<div class="portfolio-preview-icon"><i class="fas ${icon}"></i></div>`);
+}
+
 function applyFilter(cat) {
   let visible = 0;
   document.querySelectorAll('.portfolio-item').forEach(item => {
@@ -168,7 +182,7 @@ async function loadDynamicPortfolio() {
         const cover = p.images[0];
         const fit = cover.fit === 'contain' ? 'contain' : 'cover';
         const pad = fit === 'contain' ? ';padding:10%;box-sizing:border-box;background:#0d1b22' : '';
-        visual = `<img src="${esc(cover.url)}" alt="${esc(p.title)}" style="width:100%;height:100%;object-fit:${fit};position:absolute;inset:0${pad}">`;
+        visual = `<img src="${esc(cover.url)}" alt="${esc(p.title)}" style="width:100%;height:100%;object-fit:${fit};position:absolute;inset:0${pad}" data-fallback="../assets/img/projects/${slugify(p.title)}.png" data-icon="${icon}" onerror="coverImgNotFound(this)">`;
       } else {
         visual = `<div class="portfolio-logo"><img src="../assets/img/projects/${slugify(p.title)}.png" alt="Logo ${esc(p.title)}" data-icon="${icon}" onerror="logoNotFound(this)"></div>`;
       }
