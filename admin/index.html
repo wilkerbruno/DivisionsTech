@@ -1240,18 +1240,41 @@ function clearThemeFile() {
 
 function renderThemeLinks() {
   const box = document.getElementById('themeLinksBox');
-  box.innerHTML = themeLinks.map((link, idx) => `
-    <div style="display:flex;gap:.5rem;margin-top:.5rem">
-      <input type="text" placeholder="Nome (ex: Versão Clara)" value="${(link.label || '').replace(/"/g, '&quot;')}"
-        oninput="themeLinks[${idx}].label = this.value"
-        style="flex:1;padding:.65rem;background:var(--navy);border:1px solid var(--navy-border);border-radius:8px;color:#fff;font-family:inherit;outline:none">
-      <input type="url" placeholder="https://exemplo.com" value="${(link.url || '').replace(/"/g, '&quot;')}"
-        oninput="themeLinks[${idx}].url = this.value"
-        style="flex:1.5;padding:.65rem;background:var(--navy);border:1px solid var(--navy-border);border-radius:8px;color:#fff;font-family:inherit;outline:none">
-      <button type="button" class="del-img-btn" style="position:static;width:36px;height:36px" onclick="removeThemeLinkRow(${idx})"><i class="fas fa-times"></i></button>
+  box.innerHTML = themeLinks.map((link, idx) => {
+    const isUploaded = (link.url || '').startsWith('/api/templates/page/');
+    return `
+    <div style="padding:.6rem;margin-top:.5rem;background:var(--navy);border:1px solid var(--navy-border);border-radius:10px">
+      <div style="display:flex;gap:.5rem">
+        <input type="text" placeholder="Nome (ex: Versão Clara)" value="${(link.label || '').replace(/"/g, '&quot;')}"
+          oninput="themeLinks[${idx}].label = this.value"
+          style="flex:1;padding:.6rem;background:var(--navy-card);border:1px solid var(--navy-border);border-radius:8px;color:#fff;font-family:inherit;outline:none">
+        <input type="text" placeholder="https://exemplo.com" value="${(link.url || '').replace(/"/g, '&quot;')}"
+          oninput="themeLinks[${idx}].url = this.value"
+          style="flex:1.5;padding:.6rem;background:var(--navy-card);border:1px solid var(--navy-border);border-radius:8px;color:#fff;font-family:inherit;outline:none">
+        <button type="button" class="del-img-btn" style="position:static;width:36px;height:36px" onclick="removeThemeLinkRow(${idx})"><i class="fas fa-times"></i></button>
+      </div>
+      <div style="display:flex;align-items:center;gap:.5rem;margin-top:.5rem">
+        <span style="font-size:.75rem;color:var(--gray-400);white-space:nowrap">ou envie um .html pronto:</span>
+        <input type="file" accept=".html,.htm,text/html" onchange="uploadThemePageFile(${idx}, this.files[0])"
+          style="flex:1;font-size:.78rem;color:var(--gray-400)">
+        ${isUploaded ? '<span style="font-size:.72rem;color:var(--teal);white-space:nowrap"><i class="fas fa-check"></i> arquivo enviado</span>' : ''}
+      </div>
     </div>
-  `).join('');
+  `;
+  }).join('');
   document.getElementById('themeAddLinkBtn').style.display = themeLinks.length >= MAX_THEME_LINKS ? 'none' : 'inline-flex';
+}
+
+async function uploadThemePageFile(idx, file) {
+  if (!file) return;
+  const fd = new FormData();
+  fd.append('file', file);
+  const r = await authFetch(`${API}/templates/upload-page`, { method: 'POST', body: fd });
+  if (!r || !r.ok) { alert('Erro ao enviar o arquivo HTML.'); return; }
+  const data = await r.json();
+  themeLinks[idx].url = data.url;
+  if (!themeLinks[idx].label.trim()) themeLinks[idx].label = `Exemplo ${idx + 1}`;
+  renderThemeLinks();
 }
 
 function addThemeLinkRow() {

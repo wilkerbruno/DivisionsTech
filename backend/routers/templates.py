@@ -17,11 +17,16 @@ router = APIRouter()
 
 BACKEND_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 UPLOADS_DIR = os.path.join(BACKEND_DIR, "uploads", "templates")
+PAGES_DIR   = os.path.join(UPLOADS_DIR, "pages")
 os.makedirs(UPLOADS_DIR, exist_ok=True)
+os.makedirs(PAGES_DIR, exist_ok=True)
 
 ALLOWED_EXT = {".jpg", ".jpeg", ".png", ".webp", ".gif"}
 MAX_FILE_SIZE = 8 * 1024 * 1024  # 8MB
 MAX_LINKS = 4
+
+ALLOWED_PAGE_EXT = {".html", ".htm"}
+MAX_PAGE_SIZE = 10 * 1024 * 1024  # 10MB (página exportada com imagens embutidas pode pesar)
 
 
 def _ensure_schema():
@@ -80,8 +85,8 @@ def _parse_links(raw: str) -> list[dict]:
         url = str(item.get("url", "")).strip()[:500]
         if not label or not url:
             continue
-        if not url.lower().startswith(("http://", "https://")):
-            raise HTTPException(status_code=400, detail=f"Link '{label}' deve começar com http:// ou https://")
+        if not (url.lower().startswith(("http://", "https://")) or url.startswith("/")):
+            raise HTTPException(status_code=400, detail=f"Link '{label}' deve ser uma URL (http://...) ou um arquivo enviado")
         out.append({"label": label, "url": url})
     return out
 
@@ -139,6 +144,37 @@ def get_image(filename: str):
     if not os.path.isfile(filepath):
         raise HTTPException(status_code=404, detail="Imagem não encontrada")
     return FileResponse(filepath)
+
+
+@router.get("/page/{filename}")
+def get_page(filename: str):
+    """Serve uma página HTML enviada pelo admin como exemplo (sem precisar de link externo)."""
+    safe_name = os.path.basename(filename)
+    filepath = os.path.join(PAGES_DIR, safe_name)
+    if not os.path.isfile(filepath):
+        raise HTTPException(status_code=404, detail="Página não encontrada")
+    return FileResponse(filepath, media_type="text/html")
+
+
+@router.post("/upload-page")
+async def upload_page(file: UploadFile = File(...), _: str = Depends(get_current_admin)):
+    """Admin envia um .html pronto; vira o link de exemplo do tema, sem precisar hospedar em outro lugar."""
+    ext = os.path.splitext(file.filename or "")[1].lower()
+    if ext not in ALLOWED_PAGE_EXT:
+        raise HTTPException(status_code=400, detail="Envie um arquivo .html")
+
+    filename = f"{uuid.uuid4().hex}.html"
+    filepath = os.path.join(PAGES_DIR, filename)
+
+    import shutil
+    with open(filepath, "wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
+
+    if os.path.getsize(filepath) > MAX_PAGE_SIZE:
+        os.remove(filepath)
+        raise HTTPException(status_code=400, detail="Arquivo muito grande (máx 10MB)")
+
+    return {"ok": True, "url": f"/api/templates/page/{filename}"}
 
 
 # ════════════════════════════════════════════════════════════
