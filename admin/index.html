@@ -424,7 +424,7 @@
     </div>
     <div style="display:flex;align-items:center;gap:.6rem;margin-top:.9rem">
       <i class="fas fa-search-minus" style="color:var(--gray-400)"></i>
-      <input type="range" id="cropZoom" min="100" max="400" value="100" style="flex:1" oninput="onCropZoomChange()">
+      <input type="range" id="cropZoom" min="0" max="100" value="0" step="0.5" style="flex:1" oninput="onCropZoomChange()">
       <i class="fas fa-search-plus" style="color:var(--gray-400)"></i>
     </div>
     <div class="modal-footer">
@@ -882,8 +882,17 @@ async function toggleImageFit(projectId, imageId, newFit) {
 // ════════════════════════════════════════════════════════════
 let cropTarget = null;
 let cropDrag = null;
-const cropState = { scale: 1, minScale: 1, tx: 0, ty: 0, naturalW: 0, naturalH: 0 };
+const cropState = { scale: 1, sMin: 1, sMid: 1, sMax: 1, tx: 0, ty: 0, naturalW: 0, naturalH: 0 };
 const CROP_OUT_W = 800;
+
+// Slider 0–100: 0 = imagem inteira visível (pode sobrar fundo), 50 = tamanho original (1:1), 100 = zoom máximo.
+function sliderToScale(v) {
+  const { sMin, sMid, sMax } = cropState;
+  const t = v <= 50 ? v / 50 : (v - 50) / 50;
+  const from = v <= 50 ? sMin : sMid;
+  const to   = v <= 50 ? sMid : sMax;
+  return Math.exp(Math.log(from) + t * (Math.log(to) - Math.log(from)));
+}
 
 function openCropper(src, target) {
   cropTarget = target;
@@ -893,11 +902,17 @@ function openCropper(src, target) {
     const vpW = vp.clientWidth, vpH = vp.clientHeight;
     cropState.naturalW = img.naturalWidth;
     cropState.naturalH = img.naturalHeight;
-    cropState.minScale = Math.max(vpW / img.naturalWidth, vpH / img.naturalHeight);
-    cropState.scale = cropState.minScale;
+
+    const containScale = Math.min(vpW / img.naturalWidth, vpH / img.naturalHeight);
+    const coverScale   = Math.max(vpW / img.naturalWidth, vpH / img.naturalHeight);
+    cropState.sMin = Math.min(containScale, 1);   // dá pra diminuir até a logo inteira caber, sem cortar
+    cropState.sMid = 1;                            // meio da régua = tamanho original (1:1)
+    cropState.sMax = Math.max(coverScale, 1) * 4;  // zoom in generoso
+
+    cropState.scale = cropState.sMin;
     cropState.tx = (vpW - img.naturalWidth * cropState.scale) / 2;
     cropState.ty = (vpH - img.naturalHeight * cropState.scale) / 2;
-    document.getElementById('cropZoom').value = 100;
+    document.getElementById('cropZoom').value = 0;
     applyCropTransform();
   };
   img.src = src;
@@ -914,8 +929,9 @@ function clampCropTranslate() {
   const vpW = vp.clientWidth, vpH = vp.clientHeight;
   const dispW = cropState.naturalW * cropState.scale;
   const dispH = cropState.naturalH * cropState.scale;
-  cropState.tx = Math.min(0, Math.max(vpW - dispW, cropState.tx));
-  cropState.ty = Math.min(0, Math.max(vpH - dispH, cropState.ty));
+
+  cropState.tx = dispW <= vpW ? (vpW - dispW) / 2 : Math.min(0, Math.max(vpW - dispW, cropState.tx));
+  cropState.ty = dispH <= vpH ? (vpH - dispH) / 2 : Math.min(0, Math.max(vpH - dispH, cropState.ty));
 }
 
 function applyCropTransform() {
@@ -927,13 +943,12 @@ function applyCropTransform() {
 }
 
 function onCropZoomChange() {
-  const factor = document.getElementById('cropZoom').value / 100;
   const vp = document.getElementById('cropViewport');
   const vpW = vp.clientWidth, vpH = vp.clientHeight;
   const cx = vpW / 2, cy = vpH / 2;
   const imgX = (cx - cropState.tx) / cropState.scale;
   const imgY = (cy - cropState.ty) / cropState.scale;
-  cropState.scale = cropState.minScale * factor;
+  cropState.scale = sliderToScale(Number(document.getElementById('cropZoom').value));
   cropState.tx = cx - imgX * cropState.scale;
   cropState.ty = cy - imgY * cropState.scale;
   applyCropTransform();
