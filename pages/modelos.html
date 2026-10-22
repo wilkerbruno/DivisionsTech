@@ -125,8 +125,8 @@ async function loadTemplates() {
         : `<div class="portfolio-preview-icon"><i class="fas fa-layer-group"></i></div>`;
 
       const links = (t.links || []).map(l => `
-        <a href="${esc(l.url)}" class="portfolio-btn portfolio-btn-ghost" target="_blank" rel="noopener noreferrer">
-          ${esc(l.label)} <i class="fas fa-arrow-up-right-from-square"></i>
+        <a href="${esc(l.url)}" class="portfolio-example-btn" target="_blank" rel="noopener noreferrer" title="${esc(l.label)}">
+          <span style="overflow:hidden;text-overflow:ellipsis">${esc(l.label)}</span> <i class="fas fa-arrow-up-right-from-square"></i>
         </a>
       `).join('');
 
@@ -139,8 +139,8 @@ async function loadTemplates() {
           <div class="portfolio-content">
             <h3>${esc(t.title)}</h3>
             <p>${esc(t.description)}</p>
-            <div class="portfolio-actions">
-              ${links}
+            <div class="portfolio-footer-actions">
+              ${links ? `<div class="portfolio-examples">${links}</div>` : ''}
               <a href="contato.html" class="portfolio-btn portfolio-btn-primary">Quero algo parecido</a>
             </div>
           </div>

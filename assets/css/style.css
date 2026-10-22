@@ -217,13 +217,25 @@ a{text-decoration:none;color:inherit;}
 .portfolio-logo img{width:100%;height:100%;object-fit:contain;border-radius:12px;}
 .portfolio-item:hover .portfolio-logo{transform:scale(1.06);}
 .portfolio-content{display:flex;flex-direction:column;flex:1;}
-.portfolio-actions{display:flex;flex-wrap:wrap;gap:.75rem;margin-top:auto;padding-top:1.25rem;}
-.portfolio-btn{flex:1 1 140px;display:inline-flex;align-items:center;justify-content:center;gap:.5rem;padding:.75rem 1.1rem;border-radius:12px;border:1px solid transparent;font-size:.88rem;font-weight:600;white-space:nowrap;text-align:center;transition:all .25s;cursor:pointer;}
-.portfolio-btn-primary{background:var(--grad-teal);color:#fff;box-shadow:0 6px 18px rgba(26,188,179,.25);}
-.portfolio-btn-primary:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(26,188,179,.38);}
-.portfolio-btn-ghost{background:rgba(255,255,255,.03);color:var(--white);border-color:rgba(148,163,184,.3);}
+.portfolio-actions{display:flex;flex-wrap:wrap;gap:.65rem;margin-top:auto;padding-top:1.25rem;}
+.portfolio-btn{flex:1 1 140px;display:inline-flex;align-items:center;justify-content:center;gap:.45rem;padding:.72rem 1rem;border-radius:10px;border:1px solid transparent;font-size:.85rem;font-weight:600;line-height:1.2;white-space:nowrap;text-align:center;transition:all .22s ease;cursor:pointer;}
+.portfolio-btn i{font-size:.75rem;}
+.portfolio-btn-primary{background:var(--grad-teal);color:#fff;box-shadow:0 6px 16px rgba(26,188,179,.25);}
+.portfolio-btn-primary:hover{transform:translateY(-2px);box-shadow:0 10px 22px rgba(26,188,179,.4);}
+.portfolio-btn-ghost{background:rgba(255,255,255,.03);color:var(--gray-300);border-color:rgba(148,163,184,.25);}
 .portfolio-btn-ghost:hover{border-color:var(--teal);color:var(--teal);background:rgba(26,188,179,.08);transform:translateY(-2px);}
 .portfolio-empty{grid-column:1/-1;text-align:center;padding:3rem;color:var(--gray-400);}
+
+/* Rodapé de card com vários exemplos (Modelos): grade compacta + CTA cheia embaixo */
+.portfolio-footer-actions{margin-top:auto;padding-top:1.25rem;display:flex;flex-direction:column;gap:.6rem;}
+.portfolio-examples{display:grid;grid-template-columns:repeat(2,1fr);gap:.5rem;}
+.portfolio-example-btn{display:inline-flex;align-items:center;justify-content:center;gap:.4rem;
+  padding:.62rem .5rem;border-radius:9px;border:1px solid rgba(148,163,184,.25);
+  background:rgba(255,255,255,.03);color:var(--gray-300);font-size:.8rem;font-weight:600;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:all .22s ease;}
+.portfolio-example-btn:hover{border-color:var(--teal);color:var(--teal);background:rgba(26,188,179,.08);transform:translateY(-2px);}
+.portfolio-example-btn i{font-size:.68rem;flex-shrink:0;}
+.portfolio-footer-actions .portfolio-btn{width:100%;flex:none;}
 
 /* ── SOBRE PAGE ──────────────────────────────────────────────── */
 .about-page{padding:5rem 0;background:var(--navy);}
