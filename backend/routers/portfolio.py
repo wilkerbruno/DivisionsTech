@@ -30,6 +30,17 @@ def _ensure_schema():
                     "ALTER TABLE portfolio_projects "
                     "ADD COLUMN project_url VARCHAR(500) NULL DEFAULT NULL AFTER tags"
                 ))
+
+            col_fit = conn.execute(text(
+                "SELECT COUNT(*) FROM information_schema.COLUMNS "
+                "WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'portfolio_images' "
+                "AND COLUMN_NAME = 'fit_mode'"
+            )).scalar()
+            if not col_fit:
+                conn.execute(text(
+                    "ALTER TABLE portfolio_images "
+                    "ADD COLUMN fit_mode VARCHAR(10) NOT NULL DEFAULT 'cover' AFTER is_cover"
+                ))
     except Exception as e:  # tabela ainda não existe ou sem permissão: create_tables.py cuida
         print(f"[portfolio] aviso na migração de project_url: {e}")
 
@@ -95,13 +106,16 @@ def list_public_projects(category: str = "", db=Depends(get_db)):
         proj = dict(p._mapping)
         images = db.execute(
             text("""
-                SELECT filename, is_cover FROM portfolio_images
+                SELECT filename, is_cover, fit_mode FROM portfolio_images
                 WHERE project_id = :pid
                 ORDER BY is_cover DESC, sort_order ASC
             """),
             {"pid": proj["id"]}
         ).fetchall()
-        proj["images"] = [f"/api/portfolio/image/{img.filename}" for img in images]
+        proj["images"] = [
+            {"url": f"/api/portfolio/image/{img.filename}", "fit": img.fit_mode}
+            for img in images
+        ]
         proj["tags_list"] = [t.strip() for t in (proj["tags"] or "").split(",") if t.strip()]
         result.append(proj)
 
@@ -133,7 +147,7 @@ def list_all_projects(db=Depends(get_db), _: str = Depends(get_current_admin)):
         proj = dict(p._mapping)
         images = db.execute(
             text("""
-                SELECT id, filename, is_cover, sort_order FROM portfolio_images
+                SELECT id, filename, is_cover, sort_order, fit_mode FROM portfolio_images
                 WHERE project_id = :pid
                 ORDER BY is_cover DESC, sort_order ASC
             """),
@@ -157,7 +171,7 @@ def get_project(project_id: int, db=Depends(get_db),
     proj = dict(row._mapping)
     images = db.execute(
         text("""
-            SELECT id, filename, is_cover, sort_order FROM portfolio_images
+            SELECT id, filename, is_cover, sort_order, fit_mode FROM portfolio_images
             WHERE project_id = :pid ORDER BY is_cover DESC, sort_order ASC
         """),
         {"pid": project_id}
@@ -320,5 +334,22 @@ def set_cover_image(project_id: int, image_id: int, db=Depends(get_db),
         text("UPDATE portfolio_images SET is_cover = 1 WHERE id = :id AND project_id = :pid"),
         {"id": image_id, "pid": project_id}
     )
+    db.commit()
+    return {"ok": True}
+
+
+@router.put("/{project_id}/image/{image_id}/fit")
+def set_image_fit(project_id: int, image_id: int, fit: str = Form(...),
+                  db=Depends(get_db), _: str = Depends(get_current_admin)):
+    """Define como a imagem se ajusta ao card: 'cover' (preenche e corta) ou 'contain' (mostra inteira)."""
+    if fit not in ("cover", "contain"):
+        raise HTTPException(status_code=400, detail="fit deve ser 'cover' ou 'contain'")
+
+    result = db.execute(
+        text("UPDATE portfolio_images SET fit_mode = :fit WHERE id = :id AND project_id = :pid"),
+        {"fit": fit, "id": image_id, "pid": project_id}
+    )
+    if result.rowcount == 0:
+        raise HTTPException(status_code=404, detail="Imagem não encontrada")
     db.commit()
     return {"ok": True}

@@ -143,6 +143,7 @@ CREATE TABLE IF NOT EXISTS portfolio_images (
     filename    VARCHAR(255) NOT NULL,
     sort_order  INT          NOT NULL DEFAULT 0,
     is_cover    TINYINT(1)   NOT NULL DEFAULT 0,
+    fit_mode    VARCHAR(10)  NOT NULL DEFAULT 'cover',
     created_at  DATETIME     NOT NULL DEFAULT NOW(),
     PRIMARY KEY (id),
     KEY idx_portfolio_images_project (project_id),

@@ -144,6 +144,10 @@
       display:flex;align-items:center;justify-content:center;font-size:.7rem;}
     .existing-image-thumb .cover-badge{position:absolute;bottom:3px;left:3px;font-size:.6rem;
       background:rgba(26,188,179,.9);color:#fff;padding:.05rem .4rem;border-radius:10px;}
+    .existing-image-thumb .fit-toggle-btn{position:absolute;top:3px;left:3px;width:22px;height:22px;
+      border-radius:50%;background:rgba(15,23,42,.85);color:#fff;border:1px solid var(--navy-border);
+      cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.65rem;}
+    .existing-image-thumb .fit-toggle-btn:hover{border-color:var(--teal);}
 
     /* Responsive */
     @media(max-width:768px){
@@ -656,9 +660,13 @@ function renderPortfolio() {
   empty.style.display = 'none';
 
   grid.innerHTML = allProjects.map(p => {
-    const cover = p.images && p.images.length
-      ? `<img src="${API}/portfolio/image/${(p.images.find(i=>i.is_cover)||p.images[0]).filename}" alt="${p.title}">`
-      : `<i class="fas fa-image no-img"></i>`;
+    let cover = `<i class="fas fa-image no-img"></i>`;
+    if (p.images && p.images.length) {
+      const img = p.images.find(i=>i.is_cover) || p.images[0];
+      const fit = img.fit_mode === 'contain' ? 'contain' : 'cover';
+      const pad = fit === 'contain' ? 'padding:12%;box-sizing:border-box;background:#0d1b22;' : '';
+      cover = `<img src="${API}/portfolio/image/${img.filename}" alt="${p.title}" style="object-fit:${fit};${pad}">`;
+    }
     return `
       <div class="portfolio-admin-card">
         <div class="portfolio-admin-cover">
@@ -711,13 +719,20 @@ function openProjectModal(id) {
 
       if (p.images && p.images.length) {
         document.getElementById('existingImagesBox').style.display = 'block';
-        document.getElementById('existingImagesGrid').innerHTML = p.images.map(img => `
+        document.getElementById('existingImagesGrid').innerHTML = p.images.map(img => {
+          const fit = img.fit_mode === 'contain' ? 'contain' : 'cover';
+          const nextFit = fit === 'contain' ? 'cover' : 'contain';
+          const icon = fit === 'contain' ? 'fa-compress' : 'fa-expand';
+          return `
           <div class="existing-image-thumb">
-            <img src="${API}/portfolio/image/${img.filename}">
+            <img src="${API}/portfolio/image/${img.filename}" style="object-fit:${fit}">
             ${img.is_cover ? '<span class="cover-badge">Capa</span>' : ''}
+            <button class="fit-toggle-btn" title="${fit === 'contain' ? 'Mostrando logo inteira — clique p/ preencher' : 'Preenchendo o quadro — clique p/ mostrar logo inteira'}"
+              onclick="toggleImageFit(${p.id}, ${img.id}, '${nextFit}')"><i class="fas ${icon}"></i></button>
             <button class="del-img-btn" onclick="deleteProjectImage(${p.id}, ${img.id})"><i class="fas fa-times"></i></button>
           </div>
-        `).join('');
+        `;
+        }).join('');
       }
     }
   }
@@ -781,6 +796,16 @@ async function deleteProject(id, title) {
 async function deleteProjectImage(projectId, imageId) {
   if (!confirm('Remover esta imagem do projeto?')) return;
   const r = await authFetch(`${API}/portfolio/${projectId}/image/${imageId}`, { method: 'DELETE' });
+  if (r && r.ok) {
+    await loadPortfolio();
+    openProjectModal(projectId);
+  }
+}
+
+async function toggleImageFit(projectId, imageId, newFit) {
+  const fd = new FormData();
+  fd.append('fit', newFit);
+  const r = await authFetch(`${API}/portfolio/${projectId}/image/${imageId}/fit`, { method: 'PUT', body: fd });
   if (r && r.ok) {
     await loadPortfolio();
     openProjectModal(projectId);
