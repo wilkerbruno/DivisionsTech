@@ -390,8 +390,10 @@
     <div class="form-group" style="margin-top:.9rem">
       <label>Imagens do Projeto</label>
       <input type="file" id="projectFiles" multiple accept="image/png,image/jpeg,image/webp,image/gif"
-        style="width:100%;padding:.8rem;background:var(--navy);border:1px solid var(--navy-border);border-radius:10px;color:#fff;font-family:inherit;outline:none">
-      <p style="font-size:.78rem;color:var(--gray-400);margin-top:.4rem">Você pode selecionar várias imagens de uma vez. A primeira enviada será a capa.</p>
+        style="width:100%;padding:.8rem;background:var(--navy);border:1px solid var(--navy-border);border-radius:10px;color:#fff;font-family:inherit;outline:none"
+        onchange="onProjectFilesChange()">
+      <p style="font-size:.78rem;color:var(--gray-400);margin-top:.4rem">Você pode selecionar várias imagens de uma vez. A primeira enviada será a capa. Clique no ícone de cada miniatura pra ajustar: preencher (corta) ou mostrar a logo inteira.</p>
+      <div id="newFilesPreview" style="display:grid;grid-template-columns:repeat(4,1fr);gap:.5rem;margin-top:.6rem"></div>
     </div>
 
     <div id="existingImagesBox" style="display:none;margin-top:1rem">
@@ -639,7 +641,37 @@ async function authFetch(url, opts={}) {
 //  PORTFÓLIO
 // ════════════════════════════════════════════════════════════
 let allProjects = [];
+let pendingFits = [];
 const CATEGORY_LABEL = {web:'Sites & Web', sistema:'Sistemas', automacao:'Automações', mobile:'Mobile'};
+
+function onProjectFilesChange() {
+  const files = document.getElementById('projectFiles').files;
+  pendingFits = Array.from(files).map(() => 'cover');
+  renderNewFilesPreview();
+}
+
+function renderNewFilesPreview() {
+  const files = document.getElementById('projectFiles').files;
+  const box = document.getElementById('newFilesPreview');
+  box.innerHTML = Array.from(files).map((file, idx) => {
+    const fit = pendingFits[idx] || 'cover';
+    const icon = fit === 'contain' ? 'fa-compress' : 'fa-expand';
+    const url = URL.createObjectURL(file);
+    return `
+      <div class="existing-image-thumb">
+        <img src="${url}" style="object-fit:${fit}">
+        ${idx === 0 ? '<span class="cover-badge">Capa</span>' : ''}
+        <button class="fit-toggle-btn" title="${fit === 'contain' ? 'Mostrando logo inteira — clique p/ preencher' : 'Preenchendo o quadro — clique p/ mostrar logo inteira'}"
+          onclick="toggleNewFileFit(${idx})"><i class="fas ${icon}"></i></button>
+      </div>
+    `;
+  }).join('');
+}
+
+function toggleNewFileFit(idx) {
+  pendingFits[idx] = pendingFits[idx] === 'contain' ? 'cover' : 'contain';
+  renderNewFilesPreview();
+}
 
 async function loadPortfolio() {
   const r = await authFetch(`${API}/portfolio/`);
@@ -701,6 +733,8 @@ function openProjectModal(id) {
   document.getElementById('projectUrl').value = '';
   document.getElementById('projectPublished').checked = true;
   document.getElementById('projectFiles').value = '';
+  pendingFits = [];
+  document.getElementById('newFilesPreview').innerHTML = '';
   document.getElementById('existingImagesBox').style.display = 'none';
   document.getElementById('existingImagesGrid').innerHTML = '';
   document.getElementById('projectModalTitle').innerHTML = 'Novo <span>Projeto</span>';
@@ -765,6 +799,7 @@ async function saveProject() {
   const files = document.getElementById('projectFiles').files;
   for (let i = 0; i < files.length; i++) {
     fd.append('files', files[i]);
+    fd.append('fits', pendingFits[i] || 'cover');
   }
 
   const btn = document.getElementById('saveProjectBtn');

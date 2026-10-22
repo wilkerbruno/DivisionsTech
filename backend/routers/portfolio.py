@@ -189,6 +189,7 @@ async def create_project(
     project_url: str = Form(""),
     is_published: bool = Form(True),
     files: List[UploadFile] = File(default=[]),
+    fits: List[str] = Form(default=[]),
     db=Depends(get_db),
     _: str = Depends(get_current_admin),
 ):
@@ -212,12 +213,13 @@ async def create_project(
         if not file.filename:
             continue
         filename = _save_image(file)
+        fit = fits[idx] if idx < len(fits) and fits[idx] in ("cover", "contain") else "cover"
         db.execute(
             text("""
-                INSERT INTO portfolio_images (project_id, filename, sort_order, is_cover)
-                VALUES (:pid, :fn, :order, :cover)
+                INSERT INTO portfolio_images (project_id, filename, sort_order, is_cover, fit_mode)
+                VALUES (:pid, :fn, :order, :cover, :fit)
             """),
-            {"pid": project_id, "fn": filename, "order": idx, "cover": 1 if idx == 0 else 0}
+            {"pid": project_id, "fn": filename, "order": idx, "cover": 1 if idx == 0 else 0, "fit": fit}
         )
     db.commit()
 
@@ -234,6 +236,7 @@ async def update_project(
     project_url: str = Form(""),
     is_published: bool = Form(True),
     files: List[UploadFile] = File(default=[]),
+    fits: List[str] = Form(default=[]),
     db=Depends(get_db),
     _: str = Depends(get_current_admin),
 ):
@@ -271,12 +274,13 @@ async def update_project(
             if not file.filename:
                 continue
             filename = _save_image(file)
+            fit = fits[idx] if idx < len(fits) and fits[idx] in ("cover", "contain") else "cover"
             db.execute(
                 text("""
-                    INSERT INTO portfolio_images (project_id, filename, sort_order, is_cover)
-                    VALUES (:pid, :fn, :order, 0)
+                    INSERT INTO portfolio_images (project_id, filename, sort_order, is_cover, fit_mode)
+                    VALUES (:pid, :fn, :order, 0, :fit)
                 """),
-                {"pid": project_id, "fn": filename, "order": current_max + idx + 1}
+                {"pid": project_id, "fn": filename, "order": current_max + idx + 1, "fit": fit}
             )
         db.commit()
 
